@@ -32,6 +32,8 @@ Current Maintainers
 Credits
 -------
 
+- Backdrop development supported by [USENIX](https://www.usenix.org/).
+- Backdrop development supported by [Giant Rabbit](https://giantrabbit.com).
 - Ported to Backdrop CMS by [Alejandro Madrigal](https://github.com/alemadlei) & [Eli Lisseck](https://github.com/elisseck).
 - Maintained for Drupal by [Jonathan Sacksick](https://www.drupal.org/u/jsacksick) & [Ryan Szrama](https://www.drupal.org/u/rszrama).
 
