@@ -5,6 +5,8 @@
  */
 class CommerceOrder extends Entity {
 
+  public $langcode = LANGUAGE_NONE;
+
   public function __construct($values = array()) {
     parent::__construct($values, 'commerce_order');
   }
