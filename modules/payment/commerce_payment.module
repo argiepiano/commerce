@@ -1280,10 +1280,10 @@ function commerce_payment_entity_load($entities, $type) {
       if (is_callable(array($action, 'getElementName')) && strpos($action->getElementName(), 'commerce_payment_enable_') === 0) {
         if (isset($action->settings['payment_method']) && is_array($action->settings['payment_method']) && !empty($action->settings['payment_method']['settings'])) {
           $instance_id = commerce_payment_method_instance_id($action->settings['payment_method']['method_id'], $entity);
-          $settings = config_get('commerce_payment.settings', 'payment_method_settings_overrides')[$instance_id];
+          $settings = config_get('commerce_payment.settings', 'payment_method_settings_overrides');
 
-          if (!empty($settings) && is_array($settings)) {
-            $action->settings['payment_method']['settings'] = array_replace_recursive($action->settings['payment_method']['settings'], $settings);
+          if (!empty($settings) && array_key_exists($instance_id, $settings)) {
+            $action->settings['payment_method']['settings'] = array_replace_recursive($action->settings['payment_method']['settings'], $settings[$instance_id]);
             $action->processSettings(TRUE);
           }
         }
@@ -1305,9 +1305,9 @@ function commerce_payment_form_rules_ui_edit_element_alter(&$form, &$form_state)
   $rule = reset($form_state['build_info']['args']);
   $payment_method = &$form['parameter']['payment_method']['settings']['payment_method'];
   $instance_id = commerce_payment_method_instance_id($payment_method['method_id']['#value'], $rule);
-  $settings = config_get('commerce_payment.settings', 'payment_method_settings_overrides')[$instance_id];
+  $settings = config_get('commerce_payment.settings', 'payment_method_settings_overrides');
 
-  if (!empty($settings) && is_array($settings)) {
+  if (!empty($settings) && array_key_exists($instance_id, $settings)) {
     $display_override_message = FALSE;
 
     foreach (element_get_visible_children($payment_method['settings']) as $key) {
