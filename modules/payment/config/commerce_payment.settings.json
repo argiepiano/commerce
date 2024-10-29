@@ -3,5 +3,6 @@
     "commerce_payment_pane_require_method": false,
     "commerce_payment_pane_no_method_behavior": "message",
     "commerce_order_auto_revision": true,
-    "anonymous": "Anonymous"
+    "anonymous": "Anonymous",
+    "payment_method_settings_overrides": {}
 }
