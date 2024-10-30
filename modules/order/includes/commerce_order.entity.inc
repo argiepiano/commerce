@@ -20,7 +20,7 @@ class CommerceOrder extends Entity {
   }
 
   public function label() {
-    return $this->name;
+    return t('Order ') . $this->id();
   }
 
   public function uri() {
