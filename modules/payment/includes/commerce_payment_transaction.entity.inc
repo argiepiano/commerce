@@ -25,10 +25,11 @@ class CommercePaymentTransaction extends Entity {
 
   public function uri() {
     if (empty($this->id)) {
-      return [];
+      return NULL;
     }
     return [
-      'path' => 'commerce_payment_transaction/' . $this->id
+      'path' => 'commerce_payment_transaction/' . $this->id,
+      'options' => [],
     ];
   }
 

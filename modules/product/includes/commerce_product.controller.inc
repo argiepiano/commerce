@@ -147,7 +147,9 @@ class CommerceProductEntityController extends BackdropCommerceEntityController i
    */
   public function attachLoad(&$queried_products, $revision_id = FALSE) {
     foreach ($queried_products as $product_id => &$product) {
-      $product->data = unserialize($product->data);
+      if ($product->data) {
+        $product->data = unserialize($product->data);
+      }
     }
 
     // Call the default attachLoad() method. This will add fields and call

@@ -25,10 +25,11 @@ class CommerceCustomerProfile extends Entity {
 
   public function uri() {
     if (empty($this->id)) {
-      return [];
+      return NULL;
     }
     return [
-      'path' => 'commerce_customer_profile/' . $this->id
+      'path' => 'commerce_customer_profile/' . $this->id,
+      'options' => [],
     ];
   }
 

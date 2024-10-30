@@ -25,10 +25,11 @@ class CommerceOrder extends Entity {
 
   public function uri() {
     if (empty($this->id)) {
-      return [];
+      return NULL;
     }
     return [
-      'path' => 'commerce_order/' . $this->id
+      'path' => 'commerce_order/' . $this->id,
+      'options' => [],
     ];
   }
 
