@@ -1308,30 +1308,6 @@ function commerce_options_list_limit_validate($element, &$form_state, $form) {
 }
 
 /**
- * Implements hook_theme_registry_alter().
- *
- * The Entity API theme function template_preprocess_entity() assumes the
- * presence of a path key in an entity URI array, which isn't strictly required
- * by Drupal core itself. Until this is fixed in the Entity API code, we replace
- * that function with a Commerce specific version.
- *
- * @todo Remove when https://drupal.org/node/1934382 is resolved.
- */
-function commerce_theme_registry_alter(&$theme_registry) {
-  // Copy the preprocess functions array and remove the core preprocess function
-  // along with the Entity API's and this module's.
-  $functions = backdrop_map_assoc($theme_registry['entity']['preprocess functions']);
-  unset($functions['template_preprocess'], $functions['template_preprocess_entity'], $functions['commerce_preprocess_entity']);
-
-  // Unshift the core preprocess function and the Commerce specific function so
-  // they appear at the beginning of the array in the desired order.
-  array_unshift($functions, 'template_preprocess', 'commerce_preprocess_entity');
-
-  // Update the function list in the theme registry.
-  $theme_registry['entity']['preprocess functions'] = array_values($functions);
-}
-
-/**
  * Returns the label of an entity.
  *
  * See the 'label callback' component of the hook_entity_info() return value
