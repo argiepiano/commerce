@@ -17,7 +17,7 @@ class CommercePaymentRulesTest extends CommerceBaseTestCase {
     return array(
       'name' => 'Payment Rules',
       'description' => 'Test the rules provided by the payment module.',
-      'group' => 'Drupal Commerce',
+      'group' => 'Backdrop Commerce',
     );
   }
 

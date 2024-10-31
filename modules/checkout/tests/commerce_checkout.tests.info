@@ -1,0 +1,5 @@
+[CommerceCheckoutTestProcess]
+name = Commerce Checkout Test Case
+description = Test checkout process
+group = Commerce
+file = commerce_checkout.test

@@ -21,7 +21,7 @@ class CommercePaymentUITest extends CommerceBaseTestCase {
     return array(
       'name' => 'Payment user interface',
       'description' => 'Test the payment user and administrator interface.',
-      'group' => 'Drupal Commerce',
+      'group' => 'Backdrop Commerce',
     );
   }
 
@@ -52,24 +52,24 @@ class CommercePaymentUITest extends CommerceBaseTestCase {
     }
 
     // Log in as normal user.
-    $this->drupalLogin($user);
+    $this->backdropLogin($user);
 
     // Order creation, in cart status.
     $this->order = $this->createDummyOrder($user->uid, $products);
 
     // Go to checkout page.
-    $this->drupalGet($this->getCommerceUrl('checkout'));
+    $this->backdropGet($this->getCommerceUrl('checkout'));
 
     // Check if the page resolves and if the default panes are present.
     $this->assertResponse(200, t('Store customer user is able to access the checkout page'));
-    $this->assertTitle(t('Checkout') . ' | Drupal', t('Checkout page successfully loaded'));
+    $this->assertTitle(t('Checkout') . ' | Backdrop', t('Checkout page successfully loaded'));
 
     // Generate random information, as city, postal code, etc.
     $address_info = $this->generateAddressInformation();
 
     // Fill in the billing address information
     $billing_pane = $this->xpath("//select[starts-with(@name, 'customer_profile_billing[commerce_customer_address]')]");
-    $this->drupalPostAJAX(NULL, array((string) $billing_pane[0]['name'] => 'US'), (string) $billing_pane[0]['name']);
+    $this->backdropPostAJAX(NULL, array((string) $billing_pane[0]['name'] => 'US'), (string) $billing_pane[0]['name']);
 
     // Check if the country has been selected correctly, this uses XPath as the
     // ajax call replaces the element and the id may change.
@@ -83,10 +83,10 @@ class CommercePaymentUITest extends CommerceBaseTestCase {
       'customer_profile_billing[commerce_customer_address][und][0][administrative_area]' => $address_info['administrative_area'],
       'customer_profile_billing[commerce_customer_address][und][0][postal_code]' => $address_info['postal_code'],
     );
-    $this->drupalPost(NULL, $info, t('Continue to next step'));
+    $this->backdropPost(NULL, $info, t('Continue to next step'));
 
     // Check for default panes and information in this checkout phase.
-    $this->assertTitle(t('Review order') . ' | Drupal', t('Review order page successfully loaded'));
+    $this->assertTitle(t('Review order') . ' | Backdrop', t('Review order page successfully loaded'));
   }
 
   /**
@@ -98,7 +98,7 @@ class CommercePaymentUITest extends CommerceBaseTestCase {
     $this->assertText('Example payment', t('Example payment method pane is present'));
 
     // Finish checkout process.
-    $this->drupalPost(NULL, array(), t('Continue to next step'));
+    $this->backdropPost(NULL, array(), t('Continue to next step'));
 
     // Load payment to check its status.
     $payment = commerce_payment_transaction_load_multiple(array(), array('order_id' => $this->order->order_id), TRUE);
@@ -107,7 +107,7 @@ class CommercePaymentUITest extends CommerceBaseTestCase {
     $this->assertEqual(reset($payment)->status, 'success', t('Payment was successfully processed'));
 
     // Check if the completion message has been displayed.
-    $this->assertTitle(t('Checkout complete') . ' | Drupal', t('Checkout process completed successfully'));
+    $this->assertTitle(t('Checkout complete') . ' | Backdrop', t('Checkout process completed successfully'));
   }
 
   /**
@@ -118,10 +118,10 @@ class CommercePaymentUITest extends CommerceBaseTestCase {
     $this->order = $this->createDummyOrder($this->store_customer->uid);
 
     // Log in as administrator user.
-    $this->drupalLogin($this->store_admin);
+    $this->backdropLogin($this->store_admin);
 
     // Go to payment administration page.
-    $this->drupalGet('admin/commerce/orders/' . $this->order->order_id . '/payment');
+    $this->backdropGet('admin/commerce/orders/' . $this->order->order_id . '/payment');
 
     $this->assertText(t('Payment'), t('Payment text found on the page.'));
 
@@ -130,7 +130,7 @@ class CommercePaymentUITest extends CommerceBaseTestCase {
     $this->assertRaw('<td class="label">' . t('Order balance') . '</td><td class="balance">' . commerce_currency_format($balance['amount'], $balance['currency_code']) . '</td>', t('Order balance is equal to order amount'));
 
     // Add a payment for half of balance.
-    $this->drupalPostAJAX(NULL, array('payment_method' => 'commerce_payment_example|commerce_payment_commerce_payment_example'), array('op' => t('Add payment')));
+    $this->backdropPostAJAX(NULL, array('payment_method' => 'commerce_payment_example|commerce_payment_commerce_payment_example'), array('op' => t('Add payment')));
     $this->assertFieldByXPath("//input[starts-with(@id, 'edit-amount')]", NULL, t('Amount field is present'));
     $this->assertFieldByXPath("//select[starts-with(@id, 'edit-currency-code')]", NULL, t('Currency code field is present'));
     $this->assertFieldByXPath("//input[starts-with(@id, 'edit-payment-details-credit-card-number')]", NULL, t('Credit card number field from payment example module is present'));
@@ -140,7 +140,7 @@ class CommercePaymentUITest extends CommerceBaseTestCase {
       'amount' => (commerce_currency_amount_to_decimal($payment_amount, $balance['currency_code'])),
       'currency_code' => 'USD',
     );
-    $this->drupalPost(NULL, $post_data, t('Save'));
+    $this->backdropPost(NULL, $post_data, t('Save'));
 
     // Reload the order.
     $order = commerce_order_load_multiple(array($this->order->order_id), array(), TRUE);
@@ -154,7 +154,7 @@ class CommercePaymentUITest extends CommerceBaseTestCase {
     $this->assertRaw('<td class="label">' . t('Order balance') . '</td><td class="balance">' . commerce_currency_format($new_balance['amount'], $new_balance['currency_code']) . '</td>', t('Order balance is displayed correctly'));
 
     // Add a payment for the remainder.
-    $this->drupalPostAJAX(NULL, array('payment_method' => 'commerce_payment_example|commerce_payment_commerce_payment_example'), array('op' => t('Add payment')));
+    $this->backdropPostAJAX(NULL, array('payment_method' => 'commerce_payment_example|commerce_payment_commerce_payment_example'), array('op' => t('Add payment')));
     $this->assertFieldByXPath("//input[starts-with(@id, 'edit-amount')]", NULL, t('Amount field is present'));
     $this->assertFieldByXPath("//select[starts-with(@id, 'edit-currency-code')]", NULL, t('Currency code field is present'));
     $this->assertFieldByXPath("//input[starts-with(@id, 'edit-payment-details-credit-card-number')]", NULL, t('Credit card number field from payment example module is present'));
@@ -163,7 +163,7 @@ class CommercePaymentUITest extends CommerceBaseTestCase {
       'amount' => commerce_currency_amount_to_decimal($new_balance['amount'], $new_balance['currency_code']),
       'currency_code' => 'USD',
     );
-    $this->drupalPost(NULL, $post_data, t('Save'));
+    $this->backdropPost(NULL, $post_data, t('Save'));
 
     // Reload the order.
     $order = commerce_order_load_multiple(array($this->order->order_id), array(), TRUE);
@@ -180,12 +180,12 @@ class CommercePaymentUITest extends CommerceBaseTestCase {
    */
   public function testCommercePaymentMethodsAdministration() {
     // Log in as store administrator user.
-    $this->drupalLogin($this->store_admin);
+    $this->backdropLogin($this->store_admin);
 
     // Go to payment methods page.
-    $this->drupalGet('admin/commerce/config/payment-methods');
+    $this->backdropGet('admin/commerce/config/payment-methods');
 
-    $this->assertTitle(t('Payment methods') . ' | Drupal', t('We are now in the payment methods page'));
+    $this->assertTitle(t('Payment methods') . ' | Backdrop', t('We are now in the payment methods page'));
     $this->assertText(t('Example payment'), t('Example payment rule is present'));
 
     // Go to edit example payment rule.
@@ -195,17 +195,17 @@ class CommercePaymentUITest extends CommerceBaseTestCase {
     $this->clickLink(t('Add condition'));
 
     // Create new data comparison condition for amount > $50.
-    $this->drupalPost(NULL, array('element_name' => 'data_is'), t('Continue'));
+    $this->backdropPost(NULL, array('element_name' => 'data_is'), t('Continue'));
     $this->assertText(t('Compare two data values of the same type with each other.'), t('Second step page for adding a condition was successfully loaded'));
-    $this->drupalPost(NULL, array('parameter[data][settings][data:select]' => 'commerce-order:commerce-order-total:amount'), t('Continue'));
+    $this->backdropPost(NULL, array('parameter[data][settings][data:select]' => 'commerce-order:commerce-order-total:amount'), t('Continue'));
     $this->assertText(t('The data to be compared, specified by using a data selector, e.g. "node:author:name".'), t('Third step page for adding a condition was successfully loaded'));
-    $this->drupalPost(NULL, array('parameter[op][settings][op]' => '>', 'parameter[value][settings][value]' => 50), t('Save'));
+    $this->backdropPost(NULL, array('parameter[op][settings][op]' => '>', 'parameter[value][settings][value]' => 50), t('Save'));
     $this->assertText(t('Your changes have been saved.'), t('New condition was successfully added'));
 
     // Adding a new action to enable the payment method if conditions are met.
     $this->clickLink(t('Add action'));
-    $this->drupalPost(NULL, array('element_name' => 'commerce_payment_enable_commerce_payment_example'), t('Continue'));
-    $this->drupalPost(NULL, array('parameter[commerce_order][settings][commerce_order:select]' => 'commerce-order'), t('Save'));
+    $this->backdropPost(NULL, array('element_name' => 'commerce_payment_enable_commerce_payment_example'), t('Continue'));
+    $this->backdropPost(NULL, array('parameter[commerce_order][settings][commerce_order:select]' => 'commerce-order'), t('Save'));
     $this->assertText(t('Your changes have been saved.'), t('New action was successfully added'));
 
     // Create a less than $50 order (20 products $2 each).
@@ -226,31 +226,31 @@ class CommercePaymentUITest extends CommerceBaseTestCase {
    */
   public function testCommercePaymentAccessPaymentAdministration() {
     // Login with normal user.
-    $this->drupalLogin($this->store_customer);
+    $this->backdropLogin($this->store_customer);
 
     // Order creation, in cart status.
     $this->order = $this->createDummyOrder($this->store_customer->uid);
 
     // Access payment administration page.
-    $this->drupalGet('admin/commerce/orders/' . $this->order->order_id . '/payment');
+    $this->backdropGet('admin/commerce/orders/' . $this->order->order_id . '/payment');
 
     $this->assertResponse(403, t('Normal user is not able to access the payment administration page'));
 
     // Access to the payment methods administration page.
-    $this->drupalGet('admin/commerce/config/payment-methods');
+    $this->backdropGet('admin/commerce/config/payment-methods');
 
     $this->assertResponse(403, t('Normal user is not able to access the payment methods administration page'));
 
     // Login with store admin.
-    $this->drupalLogin($this->store_admin);
+    $this->backdropLogin($this->store_admin);
 
     // Access payment administration page.
-    $this->drupalGet('admin/commerce/orders/' . $this->order->order_id . '/payment');
+    $this->backdropGet('admin/commerce/orders/' . $this->order->order_id . '/payment');
 
     $this->assertResponse(200, t('Store admin user can access the payment administration page'));
 
     // Access to the payment methods administration page
-    $this->drupalGet('admin/commerce/config/payment-methods');
+    $this->backdropGet('admin/commerce/config/payment-methods');
 
     $this->assertResponse(200, t('Store admin user can access the payment methods administration page'));
   }
@@ -273,7 +273,7 @@ class CommercePaymentOffsiteTest extends CommerceBaseTestCase {
     return array(
       'name' => 'Payment Offsite',
       'description' => 'Test the payment offsite process.',
-      'group' => 'Drupal Commerce',
+      'group' => 'Backdrop Commerce',
     );
   }
 
@@ -301,23 +301,23 @@ class CommercePaymentOffsiteTest extends CommerceBaseTestCase {
     $order = $this->createDummyOrder($this->store_customer->uid, array(), 'cart', $profile->profile_id);
 
     // Login with store admin.
-    $this->drupalLogin($this->store_admin);
+    $this->backdropLogin($this->store_admin);
 
     // Access to the payment methods administration page.
-    $this->drupalGet('admin/commerce/config/payment-methods');
+    $this->backdropGet('admin/commerce/config/payment-methods');
 
     // Check if the payment method exists and it's listed.
     $this->assertText(t('Dummy Payment Method Offsite'), t('Offsite example payment method is listed in the payment methods administration page'));
 
     // Login with store customer and access to checkout.
-    $this->drupalLogin($this->store_customer);
-    $this->drupalGet($this->getCommerceUrl('checkout'));
+    $this->backdropLogin($this->store_customer);
+    $this->backdropGet($this->getCommerceUrl('checkout'));
 
     // Process the order and check if the offsite payment is working.
-    $this->drupalPost(NULL, array(), t('Continue to next step'));
+    $this->backdropPost(NULL, array(), t('Continue to next step'));
     $this->assertText(t('Dummy Payment Method Offsite'), t('Offsite example payment method is listed in the checkout process form'));
-    $this->drupalPostAJAX(NULL, array('commerce_payment[payment_method]' => 'commerce_payment_dummy_offsite|commerce_payment_commerce_payment_dummy_offsite'), 'commerce_payment[payment_method]');
-    $this->drupalPost(NULL, array(), t('Continue to next step'));
+    $this->backdropPostAJAX(NULL, array('commerce_payment[payment_method]' => 'commerce_payment_dummy_offsite|commerce_payment_commerce_payment_dummy_offsite'), 'commerce_payment[payment_method]');
+    $this->backdropPost(NULL, array(), t('Continue to next step'));
 
     $this->assertFieldById('edit-submit', t('Redirect to Offsite platform'), t('Redirection button to offsite payment platform is present'));
     // We can't really test further than this.

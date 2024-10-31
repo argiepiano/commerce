@@ -41,7 +41,7 @@ class CommerceProductReferenceAdminTest extends CommerceBaseTestCase {
     return array(
       'name' => 'Product reference',
       'description' => 'Test adding and configuring product reference fields.',
-      'group' => 'Drupal Commerce',
+      'group' => 'Backdrop Commerce',
     );
   }
 
@@ -54,7 +54,7 @@ class CommerceProductReferenceAdminTest extends CommerceBaseTestCase {
 
     // Create a site admin + store admin user and login.
     $this->site_admin = $this->createUserWithPermissionHelper(array('site admin', 'store admin'));
-    $this->drupalLogin($this->site_admin);
+    $this->backdropLogin($this->site_admin);
 
     // Create a dummy product display content type without product reference
     // fields.
@@ -65,7 +65,7 @@ class CommerceProductReferenceAdminTest extends CommerceBaseTestCase {
     $this->products[2] = $this->createDummyProduct('PROD-02', 'Product Two');
 
     // Access to the manage fields screen.
-    $this->drupalGet('admin/structure/types/manage/' . strtr($this->display_type->type, '_', '-') . '/fields');
+    $this->backdropGet('admin/structure/types/manage/' . strtr($this->display_type->type, '_', '-') . '/fields');
 
     // Add a new product reference field
     $edit = array(
@@ -74,13 +74,13 @@ class CommerceProductReferenceAdminTest extends CommerceBaseTestCase {
       'fields[_add_new_field][type]' => 'commerce_product_reference',
       'fields[_add_new_field][widget_type]' => 'options_select',
     );
-    $this->drupalPost(NULL, $edit, t('Save'));
+    $this->backdropPost(NULL, $edit, t('Save'));
 
     // Save the field settings, which are empty.
-    $this->drupalPost(NULL, array(), t('Save field settings'));
+    $this->backdropPost(NULL, array(), t('Save field settings'));
 
     // Save the default field instance settings.
-    $this->drupalPost(NULL, array(), t('Save settings'));
+    $this->backdropPost(NULL, array(), t('Save settings'));
 
     // Clear field's cache.
     field_cache_clear();
@@ -102,12 +102,12 @@ class CommerceProductReferenceAdminTest extends CommerceBaseTestCase {
     $this->assertTrue($this->field_instance['field_name'] == $this->field_name, t('Field instance is present in the product display bundle'));
 
     // Check in the admin page for the content display.
-    $this->drupalGet('admin/structure/types/manage/' . strtr($this->display_type->type, '_', '-') . '/fields');
+    $this->backdropGet('admin/structure/types/manage/' . strtr($this->display_type->type, '_', '-') . '/fields');
     $this->assertText('Product', t('Reference product field label found'));
     $this->assertText($this->field_name, t('Reference product field name found'));
 
     // The product selector should appear in the product display creation page.
-    $this->drupalGet('node/add/' . strtr($this->display_type->type, '_', '-'));
+    $this->backdropGet('node/add/' . strtr($this->display_type->type, '_', '-'));
     $this->assertFieldById('edit-field-product-und', NULL, t('Field selector is present in product display creation'));
   }
 
@@ -116,21 +116,21 @@ class CommerceProductReferenceAdminTest extends CommerceBaseTestCase {
    */
   public function testCommerceProductReferenceEditField() {
     // Navigate to the edit field page.
-    $this->drupalGet('admin/structure/types/manage/' . strtr($this->display_type->type, '_', '-') . '/fields/field_product');
+    $this->backdropGet('admin/structure/types/manage/' . strtr($this->display_type->type, '_', '-') . '/fields/field_product');
 
     // Alter the field to be required and unlimited.
     $edit = array(
       'instance[required]' => 1,
       'field[cardinality]' => -1,
     );
-    $this->drupalPost(NULL, $edit, t('Save settings'));
+    $this->backdropPost(NULL, $edit, t('Save settings'));
 
     // Check the message of configuration saved.
     $this->assertRaw(t('Saved %label configuration.', array('%label' => $this->field_instance['label'])), t('Message of saved field displayed'));
 
     // Navigate again to the edit field page to check if the values have been
     // saved.
-    $this->drupalGet('admin/structure/types/manage/' . strtr($this->display_type->type, '_', '-') . '/fields/' . $this->field_name);
+    $this->backdropGet('admin/structure/types/manage/' . strtr($this->display_type->type, '_', '-') . '/fields/' . $this->field_name);
     $this->assertFieldChecked('edit-instance-required', t('Required field is checked'));
     $this->assertOptionSelected('edit-field-cardinality', -1, t('Field can have unlimited values'));
     $this->assertFieldByXPath("//select[@id='edit-field-product-und' and @multiple='multiple']", NULL, t('Multiple product selector for default values'));
@@ -140,8 +140,8 @@ class CommerceProductReferenceAdminTest extends CommerceBaseTestCase {
 
     // Also the product creation form should have the field required and with
     // a multiple select widget.
-    $this->drupalGet('node/add');
-    $this->drupalGet('node/add/' . strtr($this->display_type->type, '_', '-'));
+    $this->backdropGet('node/add');
+    $this->backdropGet('node/add/' . strtr($this->display_type->type, '_', '-'));
 
     $this->assertFieldByXPath("//select[@id='edit-field-product-und' and @multiple='multiple']", NULL, t('Multiple product selector for default values'));
   }
@@ -152,7 +152,7 @@ class CommerceProductReferenceAdminTest extends CommerceBaseTestCase {
   public function testCommerceProductReferenceAttachToUser() {
 
     // Access user manage fields page.
-    $this->drupalGet('admin/config/people/accounts/fields');
+    $this->backdropGet('admin/config/people/accounts/fields');
 
     // Add a new product reference field
     $edit = array(
@@ -161,13 +161,13 @@ class CommerceProductReferenceAdminTest extends CommerceBaseTestCase {
       'fields[_add_new_field][type]' => 'commerce_product_reference',
       'fields[_add_new_field][widget_type]' => 'options_select',
     );
-    $this->drupalPost(NULL, $edit, t('Save'));
+    $this->backdropPost(NULL, $edit, t('Save'));
 
     // Save the field settings, which are empty.
-    $this->drupalPost(NULL, array(), t('Save field settings'));
+    $this->backdropPost(NULL, array(), t('Save field settings'));
 
     // Save the field instance settings.
-    $this->drupalPost(NULL, array('instance[settings][user_register_form]' => 1), t('Save settings'));
+    $this->backdropPost(NULL, array('instance[settings][user_register_form]' => 1), t('Save settings'));
 
     // Clear field's cache.
     field_cache_clear();
@@ -179,12 +179,12 @@ class CommerceProductReferenceAdminTest extends CommerceBaseTestCase {
     $this->assertTrue($field_instance['field_name'] == 'field_user_product', t('Field instance is present in the user bundle'));
 
     // Check in the admin page for the user display.
-    $this->drupalGet('admin/config/people/accounts/fields');
+    $this->backdropGet('admin/config/people/accounts/fields');
     $this->assertText('Product', t('Reference product field label found'));
     $this->assertText('field_user_product', t('Reference product field name found'));
 
     // The product selector should appear in the product display creation page.
-    $this->drupalGet('admin/people/create');
+    $this->backdropGet('admin/people/create');
     $this->assertFieldById('edit-field-user-product-und', NULL, t('Field selector is present in user creation'));
   }
 
@@ -201,12 +201,12 @@ class CommerceProductReferenceAdminTest extends CommerceBaseTestCase {
     $this->assertFalse(empty($field_products), t('Product is in the available products of the field'));
 
     // Check if it is in the reference field for product displays.
-    $this->drupalGet('admin/structure/types/manage/' . strtr($this->display_type->type, '_', '-') . '/fields/' . $this->field_name);
+    $this->backdropGet('admin/structure/types/manage/' . strtr($this->display_type->type, '_', '-') . '/fields/' . $this->field_name);
     $select_options = $this->xpath("//select[@id='edit-field-product-und']//option");
     $this->assertTrue(in_array($product_title, $select_options), t('Product is available in the select'));
 
     // Check if it is in the product display creation select form.
-    $this->drupalGet('node/add/' . strtr($this->display_type->type, '_', '-'));
+    $this->backdropGet('node/add/' . strtr($this->display_type->type, '_', '-'));
     $select_options = $this->xpath("//select[@id='edit-field-product-und']//option");
     $this->assertTrue(in_array($product_title, $select_options), t('Product is available in the select'));
   }
@@ -221,21 +221,21 @@ class CommerceProductReferenceAdminTest extends CommerceBaseTestCase {
     $product_title = t('@sku: @title', array('@sku' => $add_product->sku, '@title' => $add_product->title));
 
     // Check if the additional type is available in the product display.
-    $this->drupalGet('node/add/' . strtr($this->display_type->type, '_', '-'));
+    $this->backdropGet('node/add/' . strtr($this->display_type->type, '_', '-'));
     $select_options = $this->xpath("//select[@id='edit-field-product-und']//option");
     $this->assertTrue(in_array($product_title, $select_options), t('Additional product is available in the select'));
 
     // Check if the additional type is available in the product field settings.
-    $this->drupalGet('admin/structure/types/manage/' . strtr($this->display_type->type, '_', '-') . '/fields/' . $this->field_name);
+    $this->backdropGet('admin/structure/types/manage/' . strtr($this->display_type->type, '_', '-') . '/fields/' . $this->field_name);
     $this->assertFieldById('edit-instance-settings-referenceable-types-additional-type', NULL, t('Additional product type is present'));
 
     // Select only the additional type.
     $this->pass(t('Configure the display product reference field to only accept products from "Additional" type:'));
-    $this->drupalPost(NULL, array('instance[settings][referenceable_types][additional_type]' => 1), t('Save settings'));
+    $this->backdropPost(NULL, array('instance[settings][referenceable_types][additional_type]' => 1), t('Save settings'));
 
     // Check the saved message and the checkbox.
     $this->assertRaw(t('Saved %label configuration.', array('%label' => $this->field_instance['label'])), t('Message of saved field displayed'));
-    $this->drupalGet('admin/structure/types/manage/' . strtr($this->display_type->type, '_', '-') . '/fields/' . $this->field_name);
+    $this->backdropGet('admin/structure/types/manage/' . strtr($this->display_type->type, '_', '-') . '/fields/' . $this->field_name);
     $this->assertFieldChecked('edit-instance-settings-referenceable-types-additional-type', t('Required field is checked'));
 
     // Clear field's cache and reload field instance information just saved.
@@ -247,7 +247,7 @@ class CommerceProductReferenceAdminTest extends CommerceBaseTestCase {
     $this->assertTrue($field_instance['settings']['referenceable_types']['product'] == 0, t('Product type: Product is not referenceable'));
 
     // Check if the additional type is available in the product display.
-    $this->drupalGet('node/add/' . strtr($this->display_type->type, '_', '-'));
+    $this->backdropGet('node/add/' . strtr($this->display_type->type, '_', '-'));
     $select_options = $this->xpath("//select[@id='edit-field-product-und']//option");
     foreach ($this->products as $product) {
       $this->assertFalse(in_array($product->title, $select_options), t('Product "!product_title" of regular type is not available in the product reference select', array('!product_title' => $product->title)));
@@ -259,7 +259,7 @@ class CommerceProductReferenceAdminTest extends CommerceBaseTestCase {
    */
   public function testCommerceProductReferenceDisplayFields() {
     // Go to manage fields screen of the product display.
-    $this->drupalGet('admin/structure/types/manage/' . strtr($this->display_type->type, '_', '-') . '/display');
+    $this->backdropGet('admin/structure/types/manage/' . strtr($this->display_type->type, '_', '-') . '/display');
     // Load all the fields that are pulled with the product and check if they
     // are in the display screen.
     $extra_fields = field_info_extra_fields('node', $this->display_type->type, 'display');
@@ -274,10 +274,10 @@ class CommerceProductReferenceAdminTest extends CommerceBaseTestCase {
    */
   public function testCommerceProductReferenceSKULinkFormatter() {
     // Go to manage fields screen of the product display.
-    $this->drupalGet('admin/structure/types/manage/' . strtr($this->display_type->type, '_', '-') . '/display');
+    $this->backdropGet('admin/structure/types/manage/' . strtr($this->display_type->type, '_', '-') . '/display');
 
     // Change the default value for SKU with link.
-    $this->drupalPost(NULL, array('fields[field_product][type]' => 'commerce_product_reference_sku_link'), t('Save'));
+    $this->backdropPost(NULL, array('fields[field_product][type]' => 'commerce_product_reference_sku_link'), t('Save'));
 
     // Check if the value has been saved.
     $this->assertText(t('Your settings have been saved.'), t('Settings saved message displayed'));
@@ -295,7 +295,7 @@ class CommerceProductReferenceAdminTest extends CommerceBaseTestCase {
     $product_node = $this->createDummyProductNode(array($product->product_id), $product->title);
 
    // Access to the product display node.
-    $this->drupalGet('node/' . $product_node->nid);
+    $this->backdropGet('node/' . $product_node->nid);
 
     // Generate and check the expected ouptut.
     $render = array(
@@ -303,7 +303,7 @@ class CommerceProductReferenceAdminTest extends CommerceBaseTestCase {
       '#title' => $product->sku,
       '#href' => 'admin/commerce/products/' . $product->product_id,
     );
-    $this->assertRaw(drupal_render($render), t('SKU Link is displayed correctly'));
+    $this->assertRaw(backdrop_render($render), t('SKU Link is displayed correctly'));
   }
 
   /**
@@ -311,10 +311,10 @@ class CommerceProductReferenceAdminTest extends CommerceBaseTestCase {
    */
   public function testCommerceProductReferenceSKUNoLinkFormatter() {
     // Go to manage fields screen of the product display.
-    $this->drupalGet('admin/structure/types/manage/' . strtr($this->display_type->type, '_', '-') . '/display');
+    $this->backdropGet('admin/structure/types/manage/' . strtr($this->display_type->type, '_', '-') . '/display');
 
     // Change the default value for SKU with link.
-    $this->drupalPost(NULL, array('fields[field_product][type]' => 'commerce_product_reference_sku_plain'), t('Save'));
+    $this->backdropPost(NULL, array('fields[field_product][type]' => 'commerce_product_reference_sku_plain'), t('Save'));
 
     // Check if the value has been saved.
     $this->assertText(t('Your settings have been saved.'), t('Settings saved message displayed'));
@@ -332,13 +332,13 @@ class CommerceProductReferenceAdminTest extends CommerceBaseTestCase {
     $product_node = $this->createDummyProductNode(array($product->product_id), $product->title);
 
    // Access to the product display node.
-    $this->drupalGet('node/' . $product_node->nid);
+    $this->backdropGet('node/' . $product_node->nid);
 
     // Generate and check the expected ouptut.
     $render = array(
       '#markup' => check_plain($product->sku),
     );
-    $this->assertRaw(drupal_render($render), t('SKU without link is displayed correctly'));
+    $this->assertRaw(backdrop_render($render), t('SKU without link is displayed correctly'));
   }
 
   /**
@@ -346,10 +346,10 @@ class CommerceProductReferenceAdminTest extends CommerceBaseTestCase {
    */
   public function testCommerceProductReferenceTitleLinkFormatter() {
     // Go to manage fields screen of the product display.
-    $this->drupalGet('admin/structure/types/manage/' . strtr($this->display_type->type, '_', '-') . '/display');
+    $this->backdropGet('admin/structure/types/manage/' . strtr($this->display_type->type, '_', '-') . '/display');
 
     // Change the default value for SKU with link.
-    $this->drupalPost(NULL, array('fields[field_product][type]' => 'commerce_product_reference_title_link'), t('Save'));
+    $this->backdropPost(NULL, array('fields[field_product][type]' => 'commerce_product_reference_title_link'), t('Save'));
 
     // Check if the value has been saved.
     $this->assertText(t('Your settings have been saved.'), t('Settings saved message displayed'));
@@ -367,7 +367,7 @@ class CommerceProductReferenceAdminTest extends CommerceBaseTestCase {
     $product_node = $this->createDummyProductNode(array($product->product_id), $product->title);
 
    // Access to the product display node.
-    $this->drupalGet('node/' . $product_node->nid);
+    $this->backdropGet('node/' . $product_node->nid);
 
     // Generate and check the expected ouptut.
     $render = array(
@@ -375,7 +375,7 @@ class CommerceProductReferenceAdminTest extends CommerceBaseTestCase {
       '#title' => $product->title,
       '#href' => 'admin/commerce/products/' . $product->product_id,
     );
-    $this->assertRaw(drupal_render($render), t('Title Link is displayed correctly'));
+    $this->assertRaw(backdrop_render($render), t('Title Link is displayed correctly'));
   }
 
   /**
@@ -383,10 +383,10 @@ class CommerceProductReferenceAdminTest extends CommerceBaseTestCase {
    */
   public function testCommerceProductReferenceTitleNoLinkFormatter() {
     // Go to manage fields screen of the product display.
-    $this->drupalGet('admin/structure/types/manage/' . strtr($this->display_type->type, '_', '-') . '/display');
+    $this->backdropGet('admin/structure/types/manage/' . strtr($this->display_type->type, '_', '-') . '/display');
 
     // Change the default value for SKU with link.
-    $this->drupalPost(NULL, array('fields[field_product][type]' => 'commerce_product_reference_title_plain'), t('Save'));
+    $this->backdropPost(NULL, array('fields[field_product][type]' => 'commerce_product_reference_title_plain'), t('Save'));
 
     // Check if the value has been saved.
     $this->assertText(t('Your settings have been saved.'), t('Settings saved message displayed'));
@@ -404,12 +404,12 @@ class CommerceProductReferenceAdminTest extends CommerceBaseTestCase {
     $product_node = $this->createDummyProductNode(array($product->product_id), $product->title);
 
    // Access to the product display node.
-    $this->drupalGet('node/' . $product_node->nid);
+    $this->backdropGet('node/' . $product_node->nid);
 
     // Generate and check the expected ouptut.
     $render = array(
       '#markup' => check_plain($product->title),
     );
-    $this->assertRaw(drupal_render($render), t('Title with no Link is displayed correctly'));
+    $this->assertRaw(backdrop_render($render), t('Title with no Link is displayed correctly'));
   }
 }

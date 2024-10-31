@@ -18,7 +18,7 @@ class CommerceProductUIAdminTest extends CommerceBaseTestCase {
     return array(
       'name' => 'Product administration',
       'description' => 'Tests creating, deleting and editing products and product types.',
-      'group' => 'Drupal Commerce',
+      'group' => 'Backdrop Commerce',
     );
   }
 
@@ -53,18 +53,18 @@ class CommerceProductUIAdminTest extends CommerceBaseTestCase {
    */
   public function testCommerceProductUIAccessProductList() {
     // Login with normal user.
-    $this->drupalLogin($this->store_customer);
+    $this->backdropLogin($this->store_customer);
 
     // Access to the admin product list.
-    $this->drupalGet('admin/commerce/products');
+    $this->backdropGet('admin/commerce/products');
 
     $this->assertResponse(403, t('Normal user is not able to access the product admin list page'));
 
     // Login with store admin.
-    $this->drupalLogin($this->store_admin);
+    $this->backdropLogin($this->store_admin);
 
     // Access to the admin product list.
-    $this->drupalGet('admin/commerce/products');
+    $this->backdropGet('admin/commerce/products');
 
     $this->assertResponse(200, t('Store admin user can access the product admin list page'));
 
@@ -77,18 +77,18 @@ class CommerceProductUIAdminTest extends CommerceBaseTestCase {
    */
   public function testCommerceProductUIAddProduct() {
     // Login with normal user.
-    $this->drupalLogin($this->store_customer);
+    $this->backdropLogin($this->store_customer);
 
     // Access to the admin product creation page.
-    $this->drupalGet('admin/commerce/products/add/product');
+    $this->backdropGet('admin/commerce/products/add/product');
 
     $this->assertResponse(403, t('Normal user is not able to add a product using the admin interface'));
 
     // Login with store admin.
-    $this->drupalLogin($this->store_admin);
+    $this->backdropLogin($this->store_admin);
 
     // Access to the admin product creation page.
-    $this->drupalGet('admin/commerce/products/add/product');
+    $this->backdropGet('admin/commerce/products/add/product');
 
     $this->assertResponse(200, t('Store admin user is allowed to add a product using the admin interface'));
 
@@ -107,7 +107,7 @@ class CommerceProductUIAdminTest extends CommerceBaseTestCase {
     $this->assertRaw(l(t('Cancel'), 'admin/commerce/products'), t('Cancel link is present'));
 
     // Try to save the product and check validation messages.
-    $this->drupalPost(NULL, array(), t('Save product'));
+    $this->backdropPost(NULL, array(), t('Save product'));
 
     $this->assertText(t('Product SKU field is required'), t('Validation message for SKU is displayed when tryin to submit the form with the field empty.'));
     $this->assertText(t('Title field is required'), t('Validation message for title is displayed when tryin to submit the form with the field empty.'));
@@ -120,7 +120,7 @@ class CommerceProductUIAdminTest extends CommerceBaseTestCase {
       'commerce_price[und][0][amount]' => commerce_currency_amount_to_decimal($price, 'USD'),
       'status' => 1,
     );
-    $this->drupalPost(NULL, $edit, t('Save product'));
+    $this->backdropPost(NULL, $edit, t('Save product'));
 
     // Load the product and wrap it.
     $product = commerce_product_load_by_sku($edit['sku']);
@@ -151,10 +151,10 @@ class CommerceProductUIAdminTest extends CommerceBaseTestCase {
    */
   public function testCommerceProductUISaveAndAddAnother() {
     // Login with store admin.
-    $this->drupalLogin($this->store_admin);
+    $this->backdropLogin($this->store_admin);
 
     // Access to the admin product creation page.
-    $this->drupalGet('admin/commerce/products/add/product');
+    $this->backdropGet('admin/commerce/products/add/product');
 
     // Create the product.
     $price = rand(2, 500);
@@ -165,7 +165,7 @@ class CommerceProductUIAdminTest extends CommerceBaseTestCase {
       'status' => 1,
     );
     // Save and add another.
-    $this->drupalPost(NULL, $edit, t('Save and add another'));
+    $this->backdropPost(NULL, $edit, t('Save and add another'));
 
     // Check the product in database
     $product = commerce_product_load_by_sku($edit['sku']);
@@ -189,18 +189,18 @@ class CommerceProductUIAdminTest extends CommerceBaseTestCase {
     $product_wrapper = entity_metadata_wrapper('commerce_product', $product);
 
     // Login with normal user.
-    $this->drupalLogin($this->store_customer);
+    $this->backdropLogin($this->store_customer);
 
     // Access to the edit product page.
-    $this->drupalGet('admin/commerce/products/' . $product->product_id . '/edit');
+    $this->backdropGet('admin/commerce/products/' . $product->product_id . '/edit');
 
     $this->assertResponse(403, t('Normal user is not able to access the product edit page'));
 
     // Login with store admin.
-    $this->drupalLogin($this->store_admin);
+    $this->backdropLogin($this->store_admin);
 
     // Access to the edit product page.
-    $this->drupalGet('admin/commerce/products/' . $product->product_id . '/edit');
+    $this->backdropGet('admin/commerce/products/' . $product->product_id . '/edit');
 
     $this->assertResponse(200, t('Store admin user can access the product edit page'));
 
@@ -221,7 +221,7 @@ class CommerceProductUIAdminTest extends CommerceBaseTestCase {
       'commerce_price[und][0][amount]' => commerce_currency_amount_to_decimal($price, 'USD'),
       'status' => 0,
     );
-    $this->drupalPost(NULL, $edit, t('Save product'));
+    $this->backdropPost(NULL, $edit, t('Save product'));
 
     // Check the product in database
     $product = commerce_product_load_by_sku($edit['sku']);
@@ -249,10 +249,10 @@ class CommerceProductUIAdminTest extends CommerceBaseTestCase {
    */
   public function testCommerceProductUICancelEditProduct() {
     // Login with store admin.
-    $this->drupalLogin($this->store_admin);
+    $this->backdropLogin($this->store_admin);
 
     // Access to the admin product list.
-    $this->drupalGet('admin/commerce/products/add/product');
+    $this->backdropGet('admin/commerce/products/add/product');
 
     // Click on cancel link.
     $this->clickLink(t('Cancel'));
@@ -268,24 +268,24 @@ class CommerceProductUIAdminTest extends CommerceBaseTestCase {
     $product = $this->createDummyProduct('PROD-01', 'Product One');
 
     // Login with normal user.
-    $this->drupalLogin($this->store_customer);
+    $this->backdropLogin($this->store_customer);
 
     // Access to the delete product page.
-    $this->drupalGet('admin/commerce/products/' . $product->product_id . '/delete');
+    $this->backdropGet('admin/commerce/products/' . $product->product_id . '/delete');
 
     $this->assertResponse(403, t('Normal user is not able to access the product deletion page'));
 
     // Login with store admin.
-    $this->drupalLogin($this->store_admin);
+    $this->backdropLogin($this->store_admin);
 
     // Access to the delete product page.
-    $this->drupalGet('admin/commerce/products/' . $product->product_id . '/delete');
+    $this->backdropGet('admin/commerce/products/' . $product->product_id . '/delete');
 
     $this->assertResponse(200, t('Store admin user can access the product delete page'));
 
     // Check the integrity of the product delete confirmation form.
     $this->pass('Test the product delete confirmation form:');
-    $this->assertTitle(t('Are you sure you want to delete !title?', array('!title' => $product->title)) . ' | Drupal', t('The confirmation message is displayed'));
+    $this->assertTitle(t('Are you sure you want to delete !title?', array('!title' => $product->title)) . ' | Backdrop', t('The confirmation message is displayed'));
     $this->assertText($product->sku, t('SKU of the product is present'));
     $this->assertText($product->title, t('Title of the product is present'));
     $this->assertText(t('Deleting this product cannot be undone.', array('@sku' => $product->sku)), t('A warning notifying the user about the action can\'t be undone is displayed.'));
@@ -293,7 +293,7 @@ class CommerceProductUIAdminTest extends CommerceBaseTestCase {
     $this->assertText(t('Cancel'), t('Cancel is present'));
 
     // Delete the product
-    $this->drupalPost(NULL, array(), t('Delete'));
+    $this->backdropPost(NULL, array(), t('Delete'));
 
     // Check for the product in database.
     $deleted_product = commerce_product_load_multiple(array($product->product_id), array(), TRUE);
@@ -319,10 +319,10 @@ class CommerceProductUIAdminTest extends CommerceBaseTestCase {
     $order = $this->createDummyOrder($this->store_customer->uid, array($product->product_id => 1));
 
     // Login with store admin.
-    $this->drupalLogin($this->store_admin);
+    $this->backdropLogin($this->store_admin);
 
     // Access to the edit product page.
-    $this->drupalGet('admin/commerce/products/' . $product->product_id . '/delete');
+    $this->backdropGet('admin/commerce/products/' . $product->product_id . '/delete');
 
     $this->pass('Assertions for trying to delete a product associated to a line item:');
     $this->assertText(t('This product is referenced by a line item on Order @order_num and therefore cannot be deleted. Disable it instead.', array('@order_num' => $order->order_id)), t('Product delete restriction message is displayed correctly'));
@@ -334,18 +334,18 @@ class CommerceProductUIAdminTest extends CommerceBaseTestCase {
    */
   public function testCommerceProductUIAccessProductTypes() {
     // Login with normal user.
-    $this->drupalLogin($this->store_customer);
+    $this->backdropLogin($this->store_customer);
 
     // Access to the product types listing.
-    $this->drupalGet('admin/commerce/products/types');
+    $this->backdropGet('admin/commerce/products/types');
 
     $this->assertResponse(403, t('Normal user is not able to access the product types listing page'));
 
     // Login with store admin.
-    $this->drupalLogin($this->store_admin);
+    $this->backdropLogin($this->store_admin);
 
     // Access to the product types listing.
-    $this->drupalGet('admin/commerce/products/types');
+    $this->backdropGet('admin/commerce/products/types');
 
     $this->assertResponse(200, t('Store admin user can access the product types listing page'));
 
@@ -364,18 +364,18 @@ class CommerceProductUIAdminTest extends CommerceBaseTestCase {
    */
   public function testCommerceProductUIAddProductType() {
     // Login with normal user.
-    $this->drupalLogin($this->store_customer);
+    $this->backdropLogin($this->store_customer);
 
     // Access to the product types add form.
-    $this->drupalGet('admin/commerce/products/types/add');
+    $this->backdropGet('admin/commerce/products/types/add');
 
     $this->assertResponse(403, t('Normal user is not able to access the product types add page'));
 
     // Login with store admin.
-    $this->drupalLogin($this->store_admin);
+    $this->backdropLogin($this->store_admin);
 
     // Access to the product types add form.
-    $this->drupalGet('admin/commerce/products/types/add');
+    $this->backdropGet('admin/commerce/products/types/add');
 
     $this->assertResponse(200, t('Store admin user can access the product types add page'));
 
@@ -384,7 +384,7 @@ class CommerceProductUIAdminTest extends CommerceBaseTestCase {
       'product_type[name]' => 'New Product Type',
       'product_type[type]' => 'new_product_type',
     );
-    $this->drupalPost(NULL, $edit, t('Save product type'));
+    $this->backdropPost(NULL, $edit, t('Save product type'));
 
     // Load all product types.
     commerce_product_types_reset();
@@ -399,12 +399,12 @@ class CommerceProductUIAdminTest extends CommerceBaseTestCase {
 
     // Test the Add and save fields.
     // Access to the product types add form.
-    $this->drupalGet('admin/commerce/products/types/add');
+    $this->backdropGet('admin/commerce/products/types/add');
     $edit = array(
       'product_type[name]' => 'Additional Product Type',
       'product_type[type]' => 'additional_product_type',
     );
-    $this->drupalPost(NULL, $edit, t('Save and add fields'));
+    $this->backdropPost(NULL, $edit, t('Save and add fields'));
 
     $this->assertEqual($this->url, url('admin/commerce/products/types/' . strtr($edit['product_type[type]'], '_', '-') . '/fields', array('absolute' => TRUE)), t('Redirect page after creating a product type using \'Save and add fields\' button is the product type field manage screen'));
     $this->assertText(t('Product type saved'), t('Message after saving a new product type is displayed'));
@@ -425,18 +425,18 @@ class CommerceProductUIAdminTest extends CommerceBaseTestCase {
    */
   public function testCommerceProductUIEditProductType() {
     // Login with normal user.
-    $this->drupalLogin($this->store_customer);
+    $this->backdropLogin($this->store_customer);
 
     // Access to the product types edit form.
-    $this->drupalGet('admin/commerce/products/types/product/edit');
+    $this->backdropGet('admin/commerce/products/types/product/edit');
 
     $this->assertResponse(403, t('Normal user is not able to access the product types edit page'));
 
     // Login with store admin.
-    $this->drupalLogin($this->store_admin);
+    $this->backdropLogin($this->store_admin);
 
     // Access to the product types edit form.
-    $this->drupalGet('admin/commerce/products/types/product/edit');
+    $this->backdropGet('admin/commerce/products/types/product/edit');
 
     $this->assertResponse(200, t('Store admin user can access the product types edit page'));
 
@@ -452,18 +452,18 @@ class CommerceProductUIAdminTest extends CommerceBaseTestCase {
    */
   public function testCommerceProductUIDeleteProductType() {
     // Login with normal user.
-    $this->drupalLogin($this->store_customer);
+    $this->backdropLogin($this->store_customer);
 
     // Access to the delete page for a product type.
-    $this->drupalGet('admin/commerce/products/types/product/delete');
+    $this->backdropGet('admin/commerce/products/types/product/delete');
 
     $this->assertResponse(403, t('Normal user is not able to access delete page for the product type'));
 
     // Login with store admin.
-    $this->drupalLogin($this->store_admin);
+    $this->backdropLogin($this->store_admin);
 
     // Access to the delete page for a product type.
-    $this->drupalGet('admin/commerce/products/types/product/delete');
+    $this->backdropGet('admin/commerce/products/types/product/delete');
 
     $this->assertResponse(200, t('Store admin can access delete page for the product type'));
 
@@ -472,13 +472,13 @@ class CommerceProductUIAdminTest extends CommerceBaseTestCase {
 
     // Check the integrity of the product type delete confirmation form.
     $this->pass('Test the product type delete confirmation form:');
-    $this->assertTitle(t('Are you sure you want to delete the !name product type?', array('!name' => $product_types['product']['name'])) . ' | Drupal', t('The confirmation message is displayed'));
+    $this->assertTitle(t('Are you sure you want to delete the !name product type?', array('!name' => $product_types['product']['name'])) . ' | Backdrop', t('The confirmation message is displayed'));
     $this->assertText(t('This action cannot be undone'), t('A warning notifying the user about the action can\'t be undone is displayed.'));
     $this->assertFieldById('edit-submit', t('Delete'), t('Delete button is present'));
     $this->assertText(t('Cancel'), t('Cancel is present'));
 
     // Delete the product type
-    $this->drupalPost(NULL, array(), t('Delete'));
+    $this->backdropPost(NULL, array(), t('Delete'));
 
     $this->assertTrue($this->url == url('admin/commerce/products/types', array('absolute' => TRUE)), t('Landing page after deleting a product is the product types listing page'));
 
@@ -500,10 +500,10 @@ class CommerceProductUIAdminTest extends CommerceBaseTestCase {
     $product = $this->createDummyProduct('PROD-01', 'Product One');
 
     // Login with store admin.
-    $this->drupalLogin($this->store_admin);
+    $this->backdropLogin($this->store_admin);
 
     // Access to the delete page for a product type.
-    $this->drupalGet('admin/commerce/products/types/product/delete');
+    $this->backdropGet('admin/commerce/products/types/product/delete');
 
     // Load product types.
     $product_types = commerce_product_types();
@@ -511,7 +511,7 @@ class CommerceProductUIAdminTest extends CommerceBaseTestCase {
     // As the product type has at least one product, it souldn't permit to be
     // deleted.
     $this->pass(t('Product type has at least one product, test the validation messages:'));
-    $this->assertTitle(t('Cannot delete the !name product type', array('!name' => $product_types['product']['name'])) . ' | Drupal', t('Validation title of the page displayed correctly.'));
+    $this->assertTitle(t('Cannot delete the !name product type', array('!name' => $product_types['product']['name'])) . ' | Backdrop', t('Validation title of the page displayed correctly.'));
 
     // Get the count of products of the type
     $query = new EntityFieldQuery();
@@ -535,18 +535,18 @@ class CommerceProductUIAdminTest extends CommerceBaseTestCase {
    */
   public function testCommerceProductUIProductTypeManageFields() {
     // Login with normal user.
-    $this->drupalLogin($this->store_customer);
+    $this->backdropLogin($this->store_customer);
 
     // Access to the product type manage fields screen.
-    $this->drupalGet('admin/commerce/products/types/product/fields');
+    $this->backdropGet('admin/commerce/products/types/product/fields');
 
     $this->assertResponse(403, t('Normal user is not able to access the product type manage fields screen'));
 
     // Login with store admin.
-    $this->drupalLogin($this->store_admin);
+    $this->backdropLogin($this->store_admin);
 
     // Access to the product type manage fields screen.
-    $this->drupalGet('admin/commerce/products/types/product/fields');
+    $this->backdropGet('admin/commerce/products/types/product/fields');
 
     $this->assertResponse(200, t('Store admin user can access the product type manage fields screen'));
   }
@@ -556,18 +556,18 @@ class CommerceProductUIAdminTest extends CommerceBaseTestCase {
    */
   public function testCommerceProductUIProductTypeDisplayFields() {
     // Login with normal user.
-    $this->drupalLogin($this->store_customer);
+    $this->backdropLogin($this->store_customer);
 
     // Access to the product type display fields screen.
-    $this->drupalGet('admin/commerce/products/types/product/display');
+    $this->backdropGet('admin/commerce/products/types/product/display');
 
     $this->assertResponse(403, t('Normal user is not able to access the product type display fields screen'));
 
     // Login with store admin.
-    $this->drupalLogin($this->store_admin);
+    $this->backdropLogin($this->store_admin);
 
     // Access to the product type display fields screen.
-    $this->drupalGet('admin/commerce/products/types/product/display');
+    $this->backdropGet('admin/commerce/products/types/product/display');
 
     $this->assertResponse(200, t('Store admin user can access the product type display fields screen'));
   }

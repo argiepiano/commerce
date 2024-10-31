@@ -1,0 +1,29 @@
+[CommerceCartTestCase]
+name = Commerce Cart Test Case
+description = Setup for Cart tests
+group = Commerce
+file = commerce_cart.test
+
+[CommerceCartTestCaseSimpleProduct]
+name = Commerce Cart Test Case Simple Product
+description = Test cart features for a product display that only has one product attached.
+group = Commerce
+file = commerce_cart.test
+
+[CommerceCartTestCaseMultiProducts]
+name = Commerce Cart Test Case Multi Product
+description = Test cart features for a product display that has several products attached.
+group = Commerce
+file = commerce_cart.test
+
+[CommerceCartTestCaseAttributes]
+name = Commerce Cart Test Case Attributes
+description = Test cart features for a product with attributes.
+group = Commerce
+file = commerce_cart.test
+
+[CommerceCartTestCaseAnonymousToAuthenticated]
+name = Commerce Cart Test Case Anonymous To Authenticated
+description = Test cart conversion from anonymous to authenticated.
+group = Commerce
+file = commerce_cart.test

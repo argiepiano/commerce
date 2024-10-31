@@ -27,7 +27,7 @@ class CommerceOrderUIAdminTest extends CommerceBaseTestCase {
     return array(
       'name' => 'Order administration',
       'description' => 'Test creating, editing and deleting an order through the order administration user interface.',
-      'group' => 'Drupal Commerce',
+      'group' => 'Backdrop Commerce',
     );
   }
 
@@ -46,21 +46,21 @@ class CommerceOrderUIAdminTest extends CommerceBaseTestCase {
     $this->product = $this->createDummyProduct('PROD-01', 'Product One');
 
     // Log in as store admin.
-    $this->drupalLogin($this->store_admin);
+    $this->backdropLogin($this->store_admin);
 
     // Navigate to the order administration page.
-    $this->drupalGet('admin/commerce/orders/add');
+    $this->backdropGet('admin/commerce/orders/add');
 
     // Add a billing information profile to the order.
-    $this->drupalPostAJAX(NULL, array(), array('op' => t('Add billing information')));
+    $this->backdropPostAJAX(NULL, array(), array('op' => t('Add billing information')));
 
     // Fill in the billing address information
     $country_field = 'commerce_customer_billing[und][profiles][0][commerce_customer_address][und][0][country]';
-    $this->drupalPostAJAX(NULL, array($country_field => 'US'), $country_field);
+    $this->backdropPostAJAX(NULL, array($country_field => 'US'), $country_field);
 
     // Create the base order for the rest of tests. Assign it to the normal
     // user.
-    $this->drupalPost(NULL, array('name' => $this->store_customer->name), t('Save order', array(), array('context' => 'a drupal commerce order')));
+    $this->backdropPost(NULL, array('name' => $this->store_customer->name), t('Save order', array(), array('context' => 'a backdrop commerce order')));
 
     // Load the order from database for later use.
     $orders = commerce_order_load_multiple(array(), array('uid' => $this->store_customer->uid));
@@ -88,16 +88,16 @@ class CommerceOrderUIAdminTest extends CommerceBaseTestCase {
    */
   public function testCommerceOrderUIEditOrder() {
     // Log in as a normal user.
-    $this->drupalLogin($this->store_customer);
+    $this->backdropLogin($this->store_customer);
     // Navigate to the order edit page, it shouldn't be accessible.
-    $this->drupalGet('admin/commerce/orders/' . $this->order->order_id . '/edit');
+    $this->backdropGet('admin/commerce/orders/' . $this->order->order_id . '/edit');
 
     $this->assertResponse(403, t('Normal user is not able to access the order edit admin screen'));
 
     // Log in as store admin.
-    $this->drupalLogin($this->store_admin);
+    $this->backdropLogin($this->store_admin);
     // Access the edit page of the order.
-    $this->drupalGet('admin/commerce/orders/' . $this->order->order_id . '/edit');
+    $this->backdropGet('admin/commerce/orders/' . $this->order->order_id . '/edit');
 
     $this->assertResponse(200, t('Store admin user can access the order edit admin screen'));
 
@@ -112,7 +112,7 @@ class CommerceOrderUIAdminTest extends CommerceBaseTestCase {
     );
 
     // Save the order.
-    $this->drupalPost(NULL, $edit, t('Save order', array(), array('context' => 'a drupal commerce order')));
+    $this->backdropPost(NULL, $edit, t('Save order', array(), array('context' => 'a backdrop commerce order')));
 
     // Reload the order from database.
     $orders = commerce_order_load_multiple(array($this->order->order_id), array(), TRUE);
@@ -141,19 +141,19 @@ class CommerceOrderUIAdminTest extends CommerceBaseTestCase {
    */
   public function testCommerceOrderUIAddProductsToOrder() {
     // Log in as store admin.
-    $this->drupalLogin($this->store_admin);
+    $this->backdropLogin($this->store_admin);
 
     // Access the edit page of the order.
-    $this->drupalGet('admin/commerce/orders/' . $this->order->order_id . '/edit');
+    $this->backdropGet('admin/commerce/orders/' . $this->order->order_id . '/edit');
 
     // Add a product line item to the order.
-    $this->drupalPostAJAX(NULL, array('commerce_line_items[und][actions][line_item_type]' => 'product'), array('op' => t('Add line item')));
+    $this->backdropPostAJAX(NULL, array('commerce_line_items[und][actions][line_item_type]' => 'product'), array('op' => t('Add line item')));
 
     $this->assertFieldByXPath("//input[starts-with(@id, 'edit-commerce-line-items-und-actions-product-sku')]", NULL, t('Product select form is present in the order admin screen'));
     $this->assertFieldByXPath("//input[starts-with(@id, 'edit-commerce-line-items-und-actions-save-line-item')]", NULL, t('Add product button is present in the order admin screen'));
 
-    $this->drupalPostAJAX(NULL, array('commerce_line_items[und][actions][product_sku]' => $this->product->sku), array('op' => t('Add product')));
-    $this->drupalPost(NULL, array(), t('Save order', array(), array('context' => 'a drupal commerce order')));
+    $this->backdropPostAJAX(NULL, array('commerce_line_items[und][actions][product_sku]' => $this->product->sku), array('op' => t('Add product')));
+    $this->backdropPost(NULL, array(), t('Save order', array(), array('context' => 'a backdrop commerce order')));
 
     // Reload the order directly from db.
     $order = commerce_order_load_multiple(array($this->order->order_id), array(), TRUE);
@@ -171,7 +171,7 @@ class CommerceOrderUIAdminTest extends CommerceBaseTestCase {
     $this->assertTrue(array_key_exists($this->product->product_id, $products), t('Added product is included in the order at the database level'));
 
     // Access the edit page of the order and check if the product is present.
-    $this->drupalGet('admin/commerce/orders/' . $this->order->order_id . '/edit');
+    $this->backdropGet('admin/commerce/orders/' . $this->order->order_id . '/edit');
     $this->assertText($this->product->sku, t('SKU from product is present in the order edit screen'));
     $this->assertText($this->product->title, t('Product title is present in the order edit screen'));
   }
@@ -181,15 +181,15 @@ class CommerceOrderUIAdminTest extends CommerceBaseTestCase {
    */
   public function testCommerceOrderUIUpdateLineItems() {
     // Log in as store admin.
-    $this->drupalLogin($this->store_admin);
+    $this->backdropLogin($this->store_admin);
 
     // Access the edit page of the order.
-    $this->drupalGet('admin/commerce/orders/' . $this->order->order_id . '/edit');
+    $this->backdropGet('admin/commerce/orders/' . $this->order->order_id . '/edit');
 
     // Add a product line item to the order.
-    $this->drupalPostAJAX(NULL, array('commerce_line_items[und][actions][line_item_type]' => 'product'), array('op' => t('Add line item')));
-    $this->drupalPostAJAX(NULL, array('commerce_line_items[und][actions][product_sku]' => $this->product->sku), array('op' => t('Add product')));
-    $this->drupalPost(NULL, array(), t('Save order', array(), array('context' => 'a drupal commerce order')));
+    $this->backdropPostAJAX(NULL, array('commerce_line_items[und][actions][line_item_type]' => 'product'), array('op' => t('Add line item')));
+    $this->backdropPostAJAX(NULL, array('commerce_line_items[und][actions][product_sku]' => $this->product->sku), array('op' => t('Add product')));
+    $this->backdropPost(NULL, array(), t('Save order', array(), array('context' => 'a backdrop commerce order')));
 
     // Reload the order directly from db and wrap it to get the line item ids.
     $orders = commerce_order_load_multiple(array($this->order->order_id), array(), TRUE);
@@ -224,7 +224,7 @@ class CommerceOrderUIAdminTest extends CommerceBaseTestCase {
       'commerce_line_items[und][line_items][' . $line_item_id . '][commerce_unit_price][und][0][amount]' => $new_price,
       'commerce_line_items[und][line_items][' . $line_item_id . '][commerce_unit_price][und][0][currency_code]' => $new_currency_code,
     );
-    $this->drupalPost(NULL, $edit, t('Save order', array(), array('context' => 'a drupal commerce order')));
+    $this->backdropPost(NULL, $edit, t('Save order', array(), array('context' => 'a backdrop commerce order')));
 
     // Check if the modifications have been correctly done.
     $this->assertFieldById('edit-commerce-line-items-und-line-items-' . $line_item_id . '-quantity', $new_qty, t('Quantity field has been correctly modified'));
@@ -238,19 +238,19 @@ class CommerceOrderUIAdminTest extends CommerceBaseTestCase {
    */
   public function testCommerceOrderUIViewOrderAdmin() {
     // Log in as a normal user.
-    $this->drupalLogin($this->store_customer);
+    $this->backdropLogin($this->store_customer);
 
     // Navigate to the order management page, it shouldn't be accessible.
-    $this->drupalGet('admin/commerce/orders');
+    $this->backdropGet('admin/commerce/orders');
 
     $this->assertResponse(403, t('Normal user is not able to access the order admin screen'));
 
     // Log in as store admin.
-    $this->drupalLogin($this->store_admin);
+    $this->backdropLogin($this->store_admin);
 
     // Navigate to the order management page and check if the order data is
     // really there.
-    $this->drupalGet('admin/commerce/orders');
+    $this->backdropGet('admin/commerce/orders');
 
     $this->assertResponse(200, t('Store admin user can access the order admin screen'));
 
@@ -274,7 +274,7 @@ class CommerceOrderUIAdminTest extends CommerceBaseTestCase {
     entity_get_controller('commerce_order')->resetCache();
     $this->assertRaw((theme('links', array('links' => $links, 'attributes' => array('class' => array('links', 'inline', 'operations'))))), t('Links for orders are present'));
 
-    $this->drupalGet('admin/commerce/orders/'. $this->order->order_id . '/view');
+    $this->backdropGet('admin/commerce/orders/'. $this->order->order_id . '/view');
     $this->assertResponse(200, t('Store admin user can access the order view page'));
   }
 
@@ -283,16 +283,16 @@ class CommerceOrderUIAdminTest extends CommerceBaseTestCase {
    */
   public function testCommerceOrderUIViewOrderUser() {
     // Log in as a normal user.
-    $this->drupalLogin($this->store_customer);
+    $this->backdropLogin($this->store_customer);
 
     // Access the order profile menu page.
-    $this->drupalGet('user/' . $this->store_customer->uid . '/orders');
+    $this->backdropGet('user/' . $this->store_customer->uid . '/orders');
     $this->assertResponse(200, t('Users can access to their own orders listing'));
 
     // Access the order just created for the user.
-    $this->drupalGet('user/' . $this->store_customer->uid . '/orders/' . $this->order->order_id);
+    $this->backdropGet('user/' . $this->store_customer->uid . '/orders/' . $this->order->order_id);
     $this->assertResponse(200, t('Users can access their own order details'));
-    $this->assertTitle(t('Order @number', array('@number' => $this->order->order_number)) . ' | Drupal', t('The order number accessed by the user matches the order from URL'));
+    $this->assertTitle(t('Order @number', array('@number' => $this->order->order_number)) . ' | Backdrop', t('The order number accessed by the user matches the order from URL'));
   }
 
 
@@ -301,17 +301,17 @@ class CommerceOrderUIAdminTest extends CommerceBaseTestCase {
    */
   public function testCommerceOrderUIViewOrderOtherUser() {
     // Create an additional user.
-    $this->other_user = $this->drupalCreateUser();
+    $this->other_user = $this->backdropCreateUser();
 
     // Log in as the additional user.
-    $this->drupalLogin($this->other_user);
+    $this->backdropLogin($this->other_user);
 
     // Access the order profile menu page.
-    $this->drupalGet('user/' . $this->store_customer->uid . '/orders');
+    $this->backdropGet('user/' . $this->store_customer->uid . '/orders');
     $this->assertResponse(404, t('Users are not able to access other user\'s orders listing'));
 
     // Access the order details.
-    $this->drupalGet('user/' . $this->store_customer->uid . '/orders/' . $this->order->order_id);
+    $this->backdropGet('user/' . $this->store_customer->uid . '/orders/' . $this->order->order_id);
     $this->assertResponse(403, t('Users are not able to access other user\'s order details'));
   }
 
@@ -320,25 +320,25 @@ class CommerceOrderUIAdminTest extends CommerceBaseTestCase {
    */
   public function testCommerceOrderUIDeleteOrder() {
     // Log in as a normal user.
-    $this->drupalLogin($this->store_customer);
+    $this->backdropLogin($this->store_customer);
 
     // Navigate to the page to delete the order.
-    $this->drupalGet('admin/commerce/orders/' . $this->order->order_id . '/delete');
+    $this->backdropGet('admin/commerce/orders/' . $this->order->order_id . '/delete');
 
     $this->assertResponse(403, t('Normal user is not able to delete orders'));
 
     // Log in as store admin.
-    $this->drupalLogin($this->store_admin);
+    $this->backdropLogin($this->store_admin);
 
     // Navigate to the page to delete the order.
-    $this->drupalGet('admin/commerce/orders/' . $this->order->order_id . '/delete');
+    $this->backdropGet('admin/commerce/orders/' . $this->order->order_id . '/delete');
 
     // The confirmation page is accesible and the form is ok.
     $this->assertResponse(200, t('Store admin user can access the order deletion page'));
     $this->assertText(t('Deleting this order cannot be undone.'), t('The confirmation message for order delete is displayed'));
 
     // Delete the order.
-    $this->drupalPost(NULL, array(), t('Delete'));
+    $this->backdropPost(NULL, array(), t('Delete'));
 
     // Reload the order from database.
     $orders = commerce_order_load_multiple(array($this->order->order_id), array(), TRUE);
@@ -356,18 +356,18 @@ class CommerceOrderUIAdminTest extends CommerceBaseTestCase {
    */
   public function testCommerceOrderUIHelpText() {
     // Log in as a normal user.
-    $this->drupalLogin($this->store_customer);
+    $this->backdropLogin($this->store_customer);
 
     // Navigate to the page to configure the helper text.
-    $this->drupalGet('admin/commerce/config/order');
+    $this->backdropGet('admin/commerce/config/order');
 
     $this->assertResponse(403, t('Normal user is not able to configure the helper text for orders'));
 
     // Log in as store admin.
-    $this->drupalLogin($this->store_admin);
+    $this->backdropLogin($this->store_admin);
 
     // Navigate to the page to configure the helper text.
-    $this->drupalGet('admin/commerce/config/order');
+    $this->backdropGet('admin/commerce/config/order');
 
     $this->assertResponse(200, t('Store admin user can configure the helper text for orders'));
 
@@ -378,7 +378,7 @@ class CommerceOrderUIAdminTest extends CommerceBaseTestCase {
     $edit = array(
       'commerce_order_help_text' => $this->randomName(),
     );
-    $this->drupalPost(NULL, $edit, t('Save configuration'));
+    $this->backdropPost(NULL, $edit, t('Save configuration'));
 
     // Check if the text has been stored
     $this->assertText(t('The configuration options have been saved.'), t('Confirmation message for saving the helper text is displayed'));
@@ -386,7 +386,7 @@ class CommerceOrderUIAdminTest extends CommerceBaseTestCase {
     $this->assertTrue(variable_get('commerce_order_help_text', '') == $edit['commerce_order_help_text'], t('Order help text saved in database'));
 
     // Check if the text is displayed in the order creation page.
-    $this->drupalGet('admin/commerce/orders/add');
+    $this->backdropGet('admin/commerce/orders/add');
     $this->assertText($edit['commerce_order_help_text'], t('Order help text message displayed in the order creation page'));
   }
 
@@ -395,18 +395,18 @@ class CommerceOrderUIAdminTest extends CommerceBaseTestCase {
    */
   public function testCommerceOrderAdminUIManageFields() {
     // Log in as a normal user.
-    $this->drupalLogin($this->store_customer);
+    $this->backdropLogin($this->store_customer);
 
     // Navigate to the manage fields screen for the order type.
-    $this->drupalGet('admin/commerce/config/order/fields');
+    $this->backdropGet('admin/commerce/config/order/fields');
 
     $this->assertResponse(403, t('Normal user is not able to access the manage fields screen for the order type'));
 
     // Log in as store admin.
-    $this->drupalLogin($this->store_admin);
+    $this->backdropLogin($this->store_admin);
 
     // Navigate to the manage fields screen for the order type.
-    $this->drupalGet('admin/commerce/config/order/fields');
+    $this->backdropGet('admin/commerce/config/order/fields');
 
     $this->assertResponse(200, t('Store admin user can access the manage fields screen for the order type'));
 
@@ -423,18 +423,18 @@ class CommerceOrderUIAdminTest extends CommerceBaseTestCase {
    */
   public function testCommerceOrderAdminUIDisplayFields() {
     // Log in as a normal user.
-    $this->drupalLogin($this->store_customer);
+    $this->backdropLogin($this->store_customer);
 
     // Navigate to the display fields screen for the order type.
-    $this->drupalGet('admin/commerce/config/order/display');
+    $this->backdropGet('admin/commerce/config/order/display');
 
     $this->assertResponse(403, t('Normal user is not able to access the display fields screen for the order type'));
 
     // Log in as store admin.
-    $this->drupalLogin($this->store_admin);
+    $this->backdropLogin($this->store_admin);
 
     // Navigate to the display fields screen for the order type.
-    $this->drupalGet('admin/commerce/config/order/display');
+    $this->backdropGet('admin/commerce/config/order/display');
 
     $this->assertResponse(200, t('Store admin user can access the display fields screen for the order type'));
 

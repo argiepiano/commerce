@@ -1,0 +1,17 @@
+[CommerceOrderCRUDTestCase]
+name = Commerce Order CRUD Test Case
+description = Test the order and order type CRUD.
+group = Commerce
+file = commerce_order.test
+
+[CommerceOrderUIAdminTest]
+name = Commerce Order UI Admin Test Case
+description = Functional tests for the commerce order UI module.
+group = Commerce
+file = commerce_order_ui.test
+
+[CommerceOrderRulesTest]
+name = Commerce Order Rules Test Case
+description = Test order rules.
+group = Commerce
+file = commerce_order.rules.test

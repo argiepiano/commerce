@@ -1,0 +1,5 @@
+[CommerceProductReferenceAdminTest]
+name = Commerce Product Reference Test Case
+description = Functional tests for the Product Reference module.
+group = Commerce
+file = commerce_product_reference.test

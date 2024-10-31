@@ -1,0 +1,23 @@
+[CommercePaymentCreditCardTest]
+name = Commerce Payment Credit Card Test Case
+description = Tests credit card detection.
+group = Commerce
+file = commerce_payment_credit_card.test
+
+[CommercePaymentRulesTest]
+name = Commerce Payment Rules Test Case
+description = Test payment rules.
+group = Commerce
+file = commerce_payment.rules.test
+
+[CommercePaymentUITest]
+name = Commerce Payment UI Test Case
+description = Test payment user interface.
+group = Commerce
+file = commerce_payment_ui.test
+
+[CommercePaymentOffsiteTest]
+name = Commerce Payment Offsite Test Case
+description = Test payment offsite.
+group = Commerce
+file = commerce_payment_ui.test

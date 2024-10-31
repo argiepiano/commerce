@@ -1,0 +1,5 @@
+[CommerceTaxUIAdminTest]
+name = Commerce Tax UI Admin Test Case
+description = Functional tests for the commerce tax UI module.
+group = Commerce
+file = commerce_tax_ui.test

@@ -26,7 +26,7 @@ class CommerceTaxUIAdminTest extends CommerceBaseTestCase {
     return array(
       'name' => 'Tax administration',
       'description' => 'Test creating, editing and deleting tax rates and tax types using the tax administration user interface.',
-      'group' => 'Drupal Commerce',
+      'group' => 'Backdrop Commerce',
     );
   }
 
@@ -39,7 +39,7 @@ class CommerceTaxUIAdminTest extends CommerceBaseTestCase {
 
     // User creation for different operations.
     $this->store_admin = $this->createStoreAdmin();
-    $this->normal_user = $this->drupalCreateUser(array('access checkout', 'view own commerce_order entities'));
+    $this->normal_user = $this->backdropCreateUser(array('access checkout', 'view own commerce_order entities'));
 
     // Create a dummy tax type for testing.
     $this->tax_type = $this->createDummyTaxType();
@@ -52,7 +52,7 @@ class CommerceTaxUIAdminTest extends CommerceBaseTestCase {
     // Get the checkout url and navigate to it.
     $links = commerce_line_item_summary_links();
     $this->checkout_url = $links['checkout']['href'];
-    $this->drupalGet($this->checkout_url);
+    $this->backdropGet($this->checkout_url);
 
     // The rule that sends a mail after checkout completion should be disabled
     //  as it returns an error caused by how mail messages are stored.
@@ -62,7 +62,7 @@ class CommerceTaxUIAdminTest extends CommerceBaseTestCase {
 
     // Complete the order process.
     $billing_pane = $this->xpath("//select[starts-with(@name, 'customer_profile_billing[commerce_customer_address]')]");
-    $this->drupalPostAJAX(NULL, array((string) $billing_pane[0]['name'] => 'US'), (string) $billing_pane[0]['name']);
+    $this->backdropPostAJAX(NULL, array((string) $billing_pane[0]['name'] => 'US'), (string) $billing_pane[0]['name']);
     $info = array(
       'customer_profile_billing[commerce_customer_address][und][0][name_line]' => $this->randomName(),
       'customer_profile_billing[commerce_customer_address][und][0][thoroughfare]' => $this->randomName(),
@@ -70,8 +70,8 @@ class CommerceTaxUIAdminTest extends CommerceBaseTestCase {
       'customer_profile_billing[commerce_customer_address][und][0][administrative_area]' => 'KY',
       'customer_profile_billing[commerce_customer_address][und][0][postal_code]' => rand(00000, 99999),
     );
-    $this->drupalPost(NULL, $info, t('Continue to next step'));
-    $this->drupalPost(NULL, array(), t('Continue to next step'));
+    $this->backdropPost(NULL, $info, t('Continue to next step'));
+    $this->backdropPost(NULL, array(), t('Continue to next step'));
   }
 
   /**
@@ -79,19 +79,19 @@ class CommerceTaxUIAdminTest extends CommerceBaseTestCase {
    */
   public function testCommerceTaxUIAccessTaxRates() {
     // Login with normal user.
-    $this->drupalLogin($this->normal_user);
+    $this->backdropLogin($this->normal_user);
 
     // Access the Tax rates listing.
-    $this->drupalGet('admin/commerce/config/taxes');
+    $this->backdropGet('admin/commerce/config/taxes');
 
     // It should return a 403.
     $this->assertResponse(403, t('Normal user is not able to access the tax rates listing page'));
 
     // Login with store admin user.
-    $this->drupalLogin($this->store_admin);
+    $this->backdropLogin($this->store_admin);
 
     // Access the Tax rates listing.
-    $this->drupalGet('admin/commerce/config/taxes');
+    $this->backdropGet('admin/commerce/config/taxes');
 
     // It should return a 200.
     $this->assertResponse(200, t('Store admin user can access the tax rates listing page'));
@@ -108,19 +108,19 @@ class CommerceTaxUIAdminTest extends CommerceBaseTestCase {
    */
   public function testCommerceTaxUICreateTaxRate() {
     // Login with normal user.
-    $this->drupalLogin($this->normal_user);
+    $this->backdropLogin($this->normal_user);
 
     // Access the creation page for tax rates.
-    $this->drupalGet('admin/commerce/config/taxes/rates/add');
+    $this->backdropGet('admin/commerce/config/taxes/rates/add');
 
     // It should return a 403.
     $this->assertResponse(403, t('Normal user is not able to access the creation page for tax rates'));
 
     // Login with store admin user.
-    $this->drupalLogin($this->store_admin);
+    $this->backdropLogin($this->store_admin);
 
     // Access the creation page for tax rates.
-    $this->drupalGet('admin/commerce/config/taxes/rates/add');
+    $this->backdropGet('admin/commerce/config/taxes/rates/add');
 
     // It should return a 200.
     $this->assertResponse(200, t('Store admin user can access the creation page for tax rates'));
@@ -150,7 +150,7 @@ class CommerceTaxUIAdminTest extends CommerceBaseTestCase {
     	'tax_rate[rate]' => rand(1,100)/1000,
     	'tax_rate[type]' => 'example_tax_type',
     );
-    $this->drupalPost(NULL, $edit, t('Save tax rate'));
+    $this->backdropPost(NULL, $edit, t('Save tax rate'));
 
     // Check the url after creation and if the values have been saved.
     $this->assertTrue($this->url == url('admin/commerce/config/taxes', array('absolute' => TRUE)), t('After saving a tax rate we are in the list of tax rates'));
@@ -173,19 +173,19 @@ class CommerceTaxUIAdminTest extends CommerceBaseTestCase {
     $tax_rate = $this->createDummyTaxRate();
 
     // Login with normal user.
-    $this->drupalLogin($this->normal_user);
+    $this->backdropLogin($this->normal_user);
 
     // Access the edit page for tax rates.
-    $this->drupalGet('admin/commerce/config/taxes/rates/' . strtr($tax_rate['name'], '_', '-') . '/edit');
+    $this->backdropGet('admin/commerce/config/taxes/rates/' . strtr($tax_rate['name'], '_', '-') . '/edit');
 
     // It should return a 403.
     $this->assertResponse(403, t('Normal user is not able to access the tax rate edit page'));
 
     // Login with store admin user.
-    $this->drupalLogin($this->store_admin);
+    $this->backdropLogin($this->store_admin);
 
     // Access the edit page for tax rates.
-    $this->drupalGet('admin/commerce/config/taxes/rates/' . strtr($tax_rate['name'], '_', '-') . '/edit');
+    $this->backdropGet('admin/commerce/config/taxes/rates/' . strtr($tax_rate['name'], '_', '-') . '/edit');
 
     // It should return a 200.
     $this->assertResponse(200, t('Store admin user can access the tax rate edit page'));
@@ -209,7 +209,7 @@ class CommerceTaxUIAdminTest extends CommerceBaseTestCase {
     	'tax_rate[rate]' => $tax_rate['rate'] + rand(1,100)/1000,
     	'tax_rate[type]' => 'vat',
     );
-    $this->drupalPost(NULL, $edit, t('Save tax rate'));
+    $this->backdropPost(NULL, $edit, t('Save tax rate'));
 
     // Check the url after edit and if the values have been loaded.
     $this->assertTrue($this->url == url('admin/commerce/config/taxes', array('absolute' => TRUE)), t('After saving a tax rate we are in the list of tax rates'));
@@ -237,32 +237,32 @@ class CommerceTaxUIAdminTest extends CommerceBaseTestCase {
     $tax_rate = $this->createDummyTaxRate();
 
     // Login with normal user.
-    $this->drupalLogin($this->normal_user);
+    $this->backdropLogin($this->normal_user);
 
     // Access the deletion page for tax rates.
-    $this->drupalGet('admin/commerce/config/taxes/rates/' . strtr($tax_rate['name'], '_', '-') . '/delete');
+    $this->backdropGet('admin/commerce/config/taxes/rates/' . strtr($tax_rate['name'], '_', '-') . '/delete');
 
     // It should return a 403.
     $this->assertResponse(403, t('Normal user is not able to access the delete form of a tax rate'));
 
     // Login with store admin user.
-    $this->drupalLogin($this->store_admin);
+    $this->backdropLogin($this->store_admin);
 
     // Access the deletion page for tax rates.
-    $this->drupalGet('admin/commerce/config/taxes/rates/' . strtr($tax_rate['name'], '_', '-') . '/delete');
+    $this->backdropGet('admin/commerce/config/taxes/rates/' . strtr($tax_rate['name'], '_', '-') . '/delete');
 
     // It should return a 200.
     $this->assertResponse(200, t('Store admin user can access the delete form of a tax rate'));
 
     // Check the integrity of the tax rate delete confirmation form.
     $this->pass('Test the tax rate delete confirmation form:');
-    $this->assertTitle(t('Are you sure you want to delete the !title tax rate?', array('!title' => $tax_rate['title'])) . ' | Drupal', t('The confirmation message is displayed'));
+    $this->assertTitle(t('Are you sure you want to delete the !title tax rate?', array('!title' => $tax_rate['title'])) . ' | Backdrop', t('The confirmation message is displayed'));
     $this->assertText(t('This action cannot be undone'), t('A warning notifying the user about the action can\'t be undone is displayed.'));
     $this->assertFieldById('edit-submit', t('Delete'), t('Delete button is present'));
     $this->assertText(t('Cancel'), t('Cancel is present'));
 
     // Confirm delete.
-    $this->drupalPost(NULL, array(), t('Delete'));
+    $this->backdropPost(NULL, array(), t('Delete'));
 
     // Check the url after deleting and if the tax rate has been deleted in
     // database.
@@ -283,19 +283,19 @@ class CommerceTaxUIAdminTest extends CommerceBaseTestCase {
     $tax_rate = $this->createDummyTaxRate();
 
     // Login with normal user.
-    $this->drupalLogin($this->normal_user);
+    $this->backdropLogin($this->normal_user);
 
     // Access the configure component page for tax rates.
-    $this->drupalGet('admin/config/workflow/rules/components/manage/' . $tax_rate['rules_component']);
+    $this->backdropGet('admin/config/workflow/rules/components/manage/' . $tax_rate['rules_component']);
 
     // It should return a 403.
     $this->assertResponse(403, t('Normal user is not able to access the component configure page for a tax rate'));
 
     // Login with store admin user.
-    $this->drupalLogin($this->store_admin);
+    $this->backdropLogin($this->store_admin);
 
     // Access the configure component page for tax rates.
-    $this->drupalGet('admin/config/workflow/rules/components/manage/' . $tax_rate['rules_component']);
+    $this->backdropGet('admin/config/workflow/rules/components/manage/' . $tax_rate['rules_component']);
 
     // It should return a 200.
     $this->assertResponse(200, t('Store admin user can access the component configure page for a tax rate'));
@@ -306,9 +306,9 @@ class CommerceTaxUIAdminTest extends CommerceBaseTestCase {
 
     // Select a basic condition as at this step we're only testing if the
     // saving process is working.
-    $this->drupalPost(NULL, array('element_name' => 'entity_is_of_type'), t('Continue'));
+    $this->backdropPost(NULL, array('element_name' => 'entity_is_of_type'), t('Continue'));
 
-    $this->drupalPost(NULL, array('parameter[entity][settings][entity:select]' => 'commerce-line-item', 'parameter[type][settings][type]' => 'commerce_line_item'), t('Save'));
+    $this->backdropPost(NULL, array('parameter[entity][settings][entity:select]' => 'commerce-line-item', 'parameter[type][settings][type]' => 'commerce_line_item'), t('Save'));
 
     // Check that after saving the url is correct and the condition has been
     // added.
@@ -321,19 +321,19 @@ class CommerceTaxUIAdminTest extends CommerceBaseTestCase {
    */
   public function testCommerceTaxUIAccessTaxTypes() {
     // Login with normal user.
-    $this->drupalLogin($this->normal_user);
+    $this->backdropLogin($this->normal_user);
 
     // Access the tax rate types listing.
-    $this->drupalGet('admin/commerce/config/taxes/types');
+    $this->backdropGet('admin/commerce/config/taxes/types');
 
     // It should return a 403.
     $this->assertResponse(403, t('Normal user is not able to access the tax types listing'));
 
     // Login with store admin user.
-    $this->drupalLogin($this->store_admin);
+    $this->backdropLogin($this->store_admin);
 
     // Access the tax rate types listing.
-    $this->drupalGet('admin/commerce/config/taxes/types');
+    $this->backdropGet('admin/commerce/config/taxes/types');
 
     // It should return a 200.
     $this->assertResponse(200, t('Store admin user can access the tax types listing'));
@@ -353,19 +353,19 @@ class CommerceTaxUIAdminTest extends CommerceBaseTestCase {
    */
   public function testCommerceTaxUICreateTaxType() {
     // Login with normal user.
-    $this->drupalLogin($this->normal_user);
+    $this->backdropLogin($this->normal_user);
 
     // Access the tax rate types create page.
-    $this->drupalGet('admin/commerce/config/taxes/types/add');
+    $this->backdropGet('admin/commerce/config/taxes/types/add');
 
     // It should return a 403.
     $this->assertResponse(403, t('Normal user is not able to access the tax type creation'));
 
     // Login with store admin user.
-    $this->drupalLogin($this->store_admin);
+    $this->backdropLogin($this->store_admin);
 
     // Access the tax rate types create page.
-    $this->drupalGet('admin/commerce/config/taxes/types/add');
+    $this->backdropGet('admin/commerce/config/taxes/types/add');
 
     // It should return a 200.
     $this->assertResponse(200, t('Store admin user can access the tax type creation'));
@@ -387,7 +387,7 @@ class CommerceTaxUIAdminTest extends CommerceBaseTestCase {
     	'tax_type[description]' => 'Additional tax rate for testing',
     	'tax_type[display_inclusive]' => 1,
     );
-    $this->drupalPost(NULL, $edit, t('Save tax type'));
+    $this->backdropPost(NULL, $edit, t('Save tax type'));
 
     // Check the url after saving and if the tax type loads in the form.
     $this->assertTrue($this->url == url('admin/commerce/config/taxes/types', array('absolute' => TRUE)), t('After saving a tax type we are in the list of tax types'));
@@ -401,7 +401,7 @@ class CommerceTaxUIAdminTest extends CommerceBaseTestCase {
     $this->assertFalse(empty($tax_type), t('Tax type is stored in database'));
 
     // Create a tax rate and check that the new tax type is there.
-    $this->drupalGet('admin/commerce/config/taxes/rates/add');
+    $this->backdropGet('admin/commerce/config/taxes/rates/add');
     $tax_select_types = $this->xpath('//select[@id="edit-tax-rate-type"]//option');
     $this->assertTrue(in_array($this->tax_type['display_title'], $tax_select_types), t('Tax type is available in the tax rate creation form'));
   }
@@ -411,19 +411,19 @@ class CommerceTaxUIAdminTest extends CommerceBaseTestCase {
    */
   public function testCommerceTaxUIEditTaxType() {
     // Login with normal user.
-    $this->drupalLogin($this->normal_user);
+    $this->backdropLogin($this->normal_user);
 
     // Access the tax rate type edit page.
-    $this->drupalGet('admin/commerce/config/taxes/types/' . strtr($this->tax_type['name'], '_', '-') . '/edit');
+    $this->backdropGet('admin/commerce/config/taxes/types/' . strtr($this->tax_type['name'], '_', '-') . '/edit');
 
     // It should return a 403.
     $this->assertResponse(403, t('Normal user is not able to access the tax type edit page'));
 
     // Login with store admin user.
-    $this->drupalLogin($this->store_admin);
+    $this->backdropLogin($this->store_admin);
 
     // Access the tax rate type edit page.
-    $this->drupalGet('admin/commerce/config/taxes/types/' . strtr($this->tax_type['name'], '_', '-') . '/edit');
+    $this->backdropGet('admin/commerce/config/taxes/types/' . strtr($this->tax_type['name'], '_', '-') . '/edit');
 
     // It should return a 200.
     $this->assertResponse(200, t('Store admin user can access the tax type edit page'));
@@ -444,7 +444,7 @@ class CommerceTaxUIAdminTest extends CommerceBaseTestCase {
     	'tax_type[description]' => 'Additional tax rate for testing',
     	'tax_type[display_inclusive]' => 1,
     );
-    $this->drupalPost(NULL, $edit, t('Save tax type'));
+    $this->backdropPost(NULL, $edit, t('Save tax type'));
 
     // Check the url after edit and if the values have been loaded.
     $this->assertTrue($this->url == url('admin/commerce/config/taxes/types', array('absolute' => TRUE)), t('After saving a tax type we are in the list of tax types'));
@@ -466,19 +466,19 @@ class CommerceTaxUIAdminTest extends CommerceBaseTestCase {
    */
   public function testCommerceTaxUIConfigureTaxType() {
     // Login with normal user.
-    $this->drupalLogin($this->normal_user);
+    $this->backdropLogin($this->normal_user);
 
     // Access the tax rate type configure rule page.
-    $this->drupalGet('admin/config/workflow/rules/reaction/manage/commerce_tax_type_' . $this->tax_type['name']);
+    $this->backdropGet('admin/config/workflow/rules/reaction/manage/commerce_tax_type_' . $this->tax_type['name']);
 
     // It should return a 403.
     $this->assertResponse(403, t('Normal user is not able to access the'));
 
     // Login with store admin user.
-    $this->drupalLogin($this->store_admin);
+    $this->backdropLogin($this->store_admin);
 
     // Access the tax rate type configure rule page.
-    $this->drupalGet('admin/config/workflow/rules/reaction/manage/commerce_tax_type_' . $this->tax_type['name']);
+    $this->backdropGet('admin/config/workflow/rules/reaction/manage/commerce_tax_type_' . $this->tax_type['name']);
 
     // It should return a 200.
     $this->assertResponse(200, t('Store admin user can access the'));
@@ -489,9 +489,9 @@ class CommerceTaxUIAdminTest extends CommerceBaseTestCase {
 
     // Select a basic condition as at this step we're only testing if the
     // saving process is working.
-    $this->drupalPost(NULL, array('element_name' => 'entity_is_of_type'), t('Continue'));
+    $this->backdropPost(NULL, array('element_name' => 'entity_is_of_type'), t('Continue'));
 
-    $this->drupalPost(NULL, array('parameter[entity][settings][entity:select]' => 'commerce-line-item', 'parameter[type][settings][type]' => 'commerce_line_item'), t('Save'));
+    $this->backdropPost(NULL, array('parameter[entity][settings][entity:select]' => 'commerce-line-item', 'parameter[type][settings][type]' => 'commerce_line_item'), t('Save'));
 
     // Check that after saving the url is correct and the condition has been
     // added.
@@ -504,32 +504,32 @@ class CommerceTaxUIAdminTest extends CommerceBaseTestCase {
    */
   public function testCommerceTaxUIDeleteTaxType() {
     // Login with normal user.
-    $this->drupalLogin($this->normal_user);
+    $this->backdropLogin($this->normal_user);
 
     // Access the tax rate type delete page.
-    $this->drupalGet('admin/commerce/config/taxes/types/' . strtr($this->tax_type['name'], '_', '-') . '/delete');
+    $this->backdropGet('admin/commerce/config/taxes/types/' . strtr($this->tax_type['name'], '_', '-') . '/delete');
 
     // It should return a 403.
     $this->assertResponse(403, t('Normal user is not able to access the tax type delete page'));
 
     // Login with store admin user.
-    $this->drupalLogin($this->store_admin);
+    $this->backdropLogin($this->store_admin);
 
     // Access the tax rate type delete page.
-    $this->drupalGet('admin/commerce/config/taxes/types/' . strtr($this->tax_type['name'], '_', '-') . '/delete');
+    $this->backdropGet('admin/commerce/config/taxes/types/' . strtr($this->tax_type['name'], '_', '-') . '/delete');
 
     // It should return a 200.
     $this->assertResponse(200, t('Store admin user can access the tax type delete page'));
 
     // Check the integrity of the tax type delete confirmation form.
     $this->pass('Test the tax type delete confirmation form:');
-    $this->assertTitle(t('Are you sure you want to delete the !title tax type?', array('!title' => $this->tax_type['title'])) . ' | Drupal', t('The confirmation message for deleting a tax type is displayed'));
+    $this->assertTitle(t('Are you sure you want to delete the !title tax type?', array('!title' => $this->tax_type['title'])) . ' | Backdrop', t('The confirmation message for deleting a tax type is displayed'));
     $this->assertText(t('This action cannot be undone'), t('A warning notifying the user about the action can\'t be undone is displayed.'));
     $this->assertFieldById('edit-submit', t('Delete'), t('Delete button is present'));
     $this->assertText(t('Cancel'), t('Cancel is present'));
 
     // Delete the tax type.
-    $this->drupalPost(NULL, array(), t('Delete'));
+    $this->backdropPost(NULL, array(), t('Delete'));
 
    // Check the url after deleting and if the tax type has been deleted in
     // database.
@@ -549,13 +549,13 @@ class CommerceTaxUIAdminTest extends CommerceBaseTestCase {
     $tax_rate = $this->createDummyTaxRate();
 
     // Login with store admin user.
-    $this->drupalLogin($this->store_admin);
+    $this->backdropLogin($this->store_admin);
 
     // Access the tax rate type delete page.
-    $this->drupalGet('admin/commerce/config/taxes/types/' . strtr($this->tax_type['name'], '_', '-') . '/delete');
+    $this->backdropGet('admin/commerce/config/taxes/types/' . strtr($this->tax_type['name'], '_', '-') . '/delete');
 
     // Check that the tax can't be deleted as it has a rate associated to it.
-    $this->assertTitle(t('Cannot delete the !title tax type', array('!title' => $this->tax_type['title'])) . ' | Drupal', t('Page title for tax type deletion with rates associated to it is correct'));
+    $this->assertTitle(t('Cannot delete the !title tax type', array('!title' => $this->tax_type['title'])) . ' | Backdrop', t('Page title for tax type deletion with rates associated to it is correct'));
     $this->assertText(t('There is a tax rate of this type. It cannot be deleted.'), t('A message that prevents user from deleting a tax type with rates associated to it is displayed'));
   }
 
@@ -570,12 +570,12 @@ class CommerceTaxUIAdminTest extends CommerceBaseTestCase {
     $order = $this->createDummyOrder($this->normal_user->uid);
 
     // Login with normal user.
-    $this->drupalLogin($this->normal_user);
+    $this->backdropLogin($this->normal_user);
 
     // Get the checkout url and navigate to it.
     $links = commerce_line_item_summary_links();
     $this->checkout_url = $links['checkout']['href'];
-    $this->drupalGet($this->checkout_url);
+    $this->backdropGet($this->checkout_url);
 
     // Check in database if the tax is applied.
     $order = commerce_order_load_multiple(array($order->order_id), array(), TRUE);
@@ -604,10 +604,10 @@ class CommerceTaxUIAdminTest extends CommerceBaseTestCase {
     $product_node = $this->createDummyProductNode(array($product->product_id));
 
     // Login with normal user.
-    $this->drupalLogin($this->normal_user);
+    $this->backdropLogin($this->normal_user);
 
     // Go to the product display and check if the tax is applied.
-    $this->drupalGet('node/' . $product_node->nid);
+    $this->backdropGet('node/' . $product_node->nid);
 
     // Check the tax applied in database and product display.
     $products = commerce_product_load_multiple(array($product->product_id), array(), TRUE);
@@ -632,17 +632,17 @@ class CommerceTaxUIAdminTest extends CommerceBaseTestCase {
     $product_node = $this->createDummyProductNode(array($product->product_id));
 
     // Login with store admin user.
-    $this->drupalLogin($this->store_admin);
+    $this->backdropLogin($this->store_admin);
 
     // Edit the product to be VAT tax inclusive.
-    $this->drupalGet('admin/commerce/products/' . $product->product_id . '/edit');
-    $this->drupalPost(NULL, array('commerce_price[und][0][include_tax]' => $tax_rate['name']), t('Save product'));
+    $this->backdropGet('admin/commerce/products/' . $product->product_id . '/edit');
+    $this->backdropPost(NULL, array('commerce_price[und][0][include_tax]' => $tax_rate['name']), t('Save product'));
 
     // Login with normal user.
-    $this->drupalLogin($this->normal_user);
+    $this->backdropLogin($this->normal_user);
 
     // Go to the product display and check if the tax is applied.
-    $this->drupalGet('node/' . $product_node->nid);
+    $this->backdropGet('node/' . $product_node->nid);
 
     // Check the tax applied in database and in the product display.
     $products = commerce_product_load_multiple(array($product->product_id), array(), TRUE);
@@ -666,22 +666,22 @@ class CommerceTaxUIAdminTest extends CommerceBaseTestCase {
     $order = $this->createDummyOrder($this->normal_user->uid);
 
     // Login with store admin user.
-    $this->drupalLogin($this->store_admin);
+    $this->backdropLogin($this->store_admin);
 
     // Modify the tax rate to no match condition.
-    $this->drupalGet('admin/config/workflow/rules/components/manage/' . $tax_rate['rules_component']);
+    $this->backdropGet('admin/config/workflow/rules/components/manage/' . $tax_rate['rules_component']);
     $this->clickLink(t('Add condition'));
-    $this->drupalPost(NULL, array('element_name' => 'data_is'), t('Continue'));
-    $this->drupalPost(NULL, array('parameter[data][settings][data:select]' => 'commerce-line-item:commerce-total:amount'), t('Continue'));
-    $this->drupalPost(NULL, array('parameter[op][settings][op]' => '<', 'parameter[value][settings][value]' => '0'), t('Save'));
+    $this->backdropPost(NULL, array('element_name' => 'data_is'), t('Continue'));
+    $this->backdropPost(NULL, array('parameter[data][settings][data:select]' => 'commerce-line-item:commerce-total:amount'), t('Continue'));
+    $this->backdropPost(NULL, array('parameter[op][settings][op]' => '<', 'parameter[value][settings][value]' => '0'), t('Save'));
 
     // Login with normal user.
-    $this->drupalLogin($this->normal_user);
+    $this->backdropLogin($this->normal_user);
 
     // Get the checkout url and navigate to it.
     $links = commerce_line_item_summary_links();
     $this->checkout_url = $links['checkout']['href'];
-    $this->drupalGet($this->checkout_url);
+    $this->backdropGet($this->checkout_url);
 
     // As the condition is impossible to match, tax rate shouldn't be applied.
     $this->assertNoText($tax_rate['display_title'], t('Tax rate doesn\'t match the conditions and is not present in the cart review pane.'));
@@ -705,13 +705,13 @@ class CommerceTaxUIAdminTest extends CommerceBaseTestCase {
     $order = $this->createDummyOrder($this->normal_user->uid);
 
     // Login with normal user.
-    $this->drupalLogin($this->normal_user);
+    $this->backdropLogin($this->normal_user);
 
     // Go through the complete order process.
     $this->commerceTaxHelperCompleteCheckout();
 
     // Access the View orders page and view the order just created.
-    $this->drupalGet('user/' . $this->normal_user->uid . '/orders/' . $order->order_id);
+    $this->backdropGet('user/' . $this->normal_user->uid . '/orders/' . $order->order_id);
 
     // Reload the order directly from db.
     $orders = commerce_order_load_multiple(array($order->order_id), array(), TRUE);
@@ -736,16 +736,16 @@ class CommerceTaxUIAdminTest extends CommerceBaseTestCase {
     $order = $this->createDummyOrder($this->normal_user->uid);
 
     // Login with normal user.
-    $this->drupalLogin($this->normal_user);
+    $this->backdropLogin($this->normal_user);
 
     // Go through the complete order process.
     $this->commerceTaxHelperCompleteCheckout();
 
     // Login with store admin user.
-    $this->drupalLogin($this->store_admin);
+    $this->backdropLogin($this->store_admin);
 
     // Access the admin order edit page.
-    $this->drupalGet('admin/commerce/orders/' . $order->order_id);
+    $this->backdropGet('admin/commerce/orders/' . $order->order_id);
 
     // Reload the order directly from db.
     $orders = commerce_order_load_multiple(array($order->order_id), array(), TRUE);

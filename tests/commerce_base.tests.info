@@ -1,0 +1,11 @@
+[CommerceBaseTestCase]
+name = Commerce Base Test Case
+description = Abstract class for Commerce testing. All Commerce tests should extend this
+group = Commerce
+file = commerce_base.test
+
+[CommerceBaseTesterTestCase]
+name = Commerce Base Tester Test Case
+description = Test class to test the CommerceBaseTestCase functions. All testTestFoo functions have "testTest" in the name to indicate that they are verifying that a test is working.
+group = Commerce
+file = commerce_base.test

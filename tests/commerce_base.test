@@ -2,14 +2,14 @@
 
 /**
  * @file
- * Defines abstract base test class for the Commerce module tests.
+ * Defines base test class for the Commerce module tests.
  */
 
 /**
- * Abstract class for Commerce testing. All Commerce tests should extend this
+ * Class for Commerce testing. All Commerce tests should extend this
  * class.
  */
-abstract class CommerceBaseTestCase extends DrupalWebTestCase {
+class CommerceBaseTestCase extends BackdropWebTestCase {
 
   protected $profile = 'minimal';
 
@@ -32,12 +32,12 @@ abstract class CommerceBaseTestCase extends DrupalWebTestCase {
     $dependencies = array(
       // API
       'entity',
+      'entity_plus',
       'entity_token',
       'rules',
       'addressfield',
       //'rules_admin',
       // UI
-      'ctools',
       'views',
       //'views_ui',
       'field',
@@ -103,7 +103,7 @@ abstract class CommerceBaseTestCase extends DrupalWebTestCase {
    * @param $set
    *  Can be a single string (from the following) or can be an array containing
    *  multiple values that should be merged:
-   *    'site admin': Admin permissions for Drupal core modules
+   *    'site admin': Admin permissions for backdrop core modules
    *    'store admin': All commerce "administer X" permissions
    */
   protected function permissionBuilder($sets) {
@@ -117,11 +117,9 @@ abstract class CommerceBaseTestCase extends DrupalWebTestCase {
       'administer modules',
       'administer site configuration',
       'administer themes',
-      'administer actions',
       'access administration pages',
       'access site in maintenance mode',
       'access site reports',
-      'block IP addresses',
       'administer permissions',
       'administer users',
       'administer rules',
@@ -185,13 +183,13 @@ abstract class CommerceBaseTestCase extends DrupalWebTestCase {
    */
   protected function createUserWithPermissionHelper($set) {
     $permissions = $this->permissionBuilder($set);
-    $user = $this->drupalCreateUser($permissions);
+    $user = $this->backdropCreateUser($permissions);
     return $user;
   }
 
   /**
    * Returns a site administrator user. Only has permissions for administering
-   * modules in Drupal core.
+   * modules in backdrop core.
    */
   protected function createSiteAdmin() {
     return $this->createUserWithPermissionHelper('site admin');
@@ -606,7 +604,7 @@ abstract class CommerceBaseTestCase extends DrupalWebTestCase {
    *  Array of currency codes to be enabled
    */
   public function enableCurrencies($currencies) {
-    $currencies = array_merge(drupal_map_assoc($currencies), variable_get('commerce_enabled_currencies', array('USD' => 'USD')));
+    $currencies = array_merge(backdrop_map_assoc($currencies), variable_get('commerce_enabled_currencies', array('USD' => 'USD')));
     variable_set('commerce_enabled_currencies', $currencies);
   }
 
@@ -659,7 +657,7 @@ abstract class CommerceBaseTestCase extends DrupalWebTestCase {
   }
 
   /**
-   * Assertions for Drupal Commerce.
+   * Assertions for backdrop Commerce.
    */
 
   /**
@@ -694,8 +692,8 @@ abstract class CommerceBaseTestCase extends DrupalWebTestCase {
     if (empty($user)) {
       $user = $this->createStoreCustomer();
     }
-    $this->drupalLogin($user);
-    $this->drupalGet($this->getCommerceUrl('cart'));
+    $this->backdropLogin($user);
+    $this->backdropGet($this->getCommerceUrl('cart'));
     $this->assertText($product->title, t('Product !product_title is present in the cart view', array('!product_title' => $product->title)));
   }
 
@@ -718,8 +716,8 @@ abstract class CommerceBaseTestCase extends DrupalWebTestCase {
     if (empty($user)) {
       $user = $this->createStoreAdmin();
     }
-    $this->drupalLogin($user);
-    $this->drupalGet('admin/commerce/products/' . $product->product_id);
+    $this->backdropLogin($user);
+    $this->backdropGet('admin/commerce/products/' . $product->product_id);
     $this->assertFieldById('edit-sku', $product->sku, t('When editing the product in the administration interface, the SKU is informed correctly'));
     $this->assertFieldById('edit-title', $product->title, t('When editing the product in the administration interface, the Title is informed correctly'));
   }
@@ -742,7 +740,7 @@ class CommerceBaseTesterTestCase extends CommerceBaseTestCase {
     return array(
       'name' => t('Commerce base'),
       'description' => t('Test the functionality of the base test class. Essentially, these are meta-tests.'),
-      'group' => t('Drupal Commerce'),
+      'group' => t('backdrop Commerce'),
     );
   }
 
@@ -762,8 +760,8 @@ class CommerceBaseTesterTestCase extends CommerceBaseTestCase {
    * enabled in the test environment.
    */
   public function testModulesEnabled() {
-    $this->drupalLogin($this->site_admin);
-    $this->drupalGet('admin/modules');
+    $this->backdropLogin($this->site_admin);
+    $this->backdropGet('admin/modules');
 
     $module_ids = array(
       'edit-modules-commerce-commerce-cart-enable',
@@ -778,9 +776,7 @@ class CommerceBaseTesterTestCase extends CommerceBaseTestCase {
       'edit-modules-commerce-commerce-product-reference-enable',
       'edit-modules-commerce-commerce-product-pricing-enable',
       'edit-modules-commerce-commerce-tax-enable',
-
       'edit-modules-commerce-commerce-payment-example-enable',
-
       'edit-modules-commerce-commerce-ui-enable',
       'edit-modules-commerce-commerce-customer-ui-enable',
       'edit-modules-commerce-commerce-line-item-ui-enable',
@@ -789,14 +785,10 @@ class CommerceBaseTesterTestCase extends CommerceBaseTestCase {
       'edit-modules-commerce-commerce-product-pricing-ui-enable',
       'edit-modules-commerce-commerce-product-ui-enable',
       'edit-modules-commerce-commerce-tax-ui-enable',
-
       'edit-modules-fields-addressfield-enable',
       'edit-modules-other-entity-enable',
-
       'edit-modules-rules-rules-enable',
-
       'edit-modules-chaos-tool-suite-ctools-enable',
-
       'edit-modules-views-views-enable',
     );
     foreach ($module_ids as $module_id) {
@@ -809,8 +801,8 @@ class CommerceBaseTesterTestCase extends CommerceBaseTestCase {
    */
   public function testTestStoreAdmin() {
     $store_admin = $this->createStoreAdmin();
-    $this->drupalLogin($this->site_admin);
-    $this->drupalGet('admin/people/permissions');
+    $this->backdropLogin($this->site_admin);
+    $this->backdropGet('admin/people/permissions');
     // This will break if it isn't the second role created
     $this->assertFieldChecked('edit-4-configure-store');
   }
@@ -821,8 +813,8 @@ class CommerceBaseTesterTestCase extends CommerceBaseTestCase {
   public function testTestCreateDummyProductType() {
     $product_type = $this->createDummyProductType();
     $store_admin = $this->createStoreAdmin();
-    $this->drupalLogin($store_admin);
-    $this->drupalGet('admin/commerce/products/types');
+    $this->backdropLogin($store_admin);
+    $this->backdropGet('admin/commerce/products/types');
     $this->assertText($product_type['name'], t('Dummy product type name found on admin/commerce/products/types'));
   }
 
@@ -835,12 +827,12 @@ class CommerceBaseTesterTestCase extends CommerceBaseTestCase {
 
     // Login with the store admin.
     $store_admin = $this->createStoreAdmin();
-    $this->drupalLogin($store_admin);
+    $this->backdropLogin($store_admin);
 
     // Assert that the product is in the product listing.
-    $this->drupalGet('admin/commerce/products');
+    $this->backdropGet('admin/commerce/products');
     $this->assertText($product->title, t('Dummy product found on admin page at admin/commerce/products'));
-    $this->drupalGet('admin/commerce/products/list');
+    $this->backdropGet('admin/commerce/products/list');
     $this->assertText($product->title, t('Dummy product found on admin page at admin/commerce/products/list'));
   }
 
@@ -851,8 +843,8 @@ class CommerceBaseTesterTestCase extends CommerceBaseTestCase {
   public function testTestCreateDummyProductDisplayAndRefField() {
     $this->createDummyProductDisplayContentType();
 
-    $this->drupalLogin($this->site_admin);
-    $this->drupalGet('node/add/product-display');
+    $this->backdropLogin($this->site_admin);
+    $this->backdropGet('node/add/product-display');
     $this->assertText('product_display', t('product_display content type successfully created and accessible.'));
     //$this->assertOptionSelected('edit-field-product-und', '_none', 'Dummy Product Display reference field shows up on node add page');
     $this->assertFieldById('edit-field-product-und', '', t('Product reference field found on Dummy Product Display.'));
@@ -877,8 +869,8 @@ class CommerceBaseTesterTestCase extends CommerceBaseTestCase {
     $product = $this->createDummyProduct($sku, $product_name);
     $product_node = $this->createDummyProductNode(array($product->product_id), $product_name);
 
-    $this->drupalLogin($this->site_admin);
-    $this->drupalGet("node/{$product_node->nid}");
+    $this->backdropLogin($this->site_admin);
+    $this->backdropGet("node/{$product_node->nid}");
     $this->assertText($product_name, t('Product !product_name created successfully', array('!product_name' => $product_name)));
   }
 
@@ -887,9 +879,9 @@ class CommerceBaseTesterTestCase extends CommerceBaseTestCase {
    */
   public function testTestCreateDummyProductNodeBatch() {
     $product_nodes = $this->createDummyProductNodeBatch(3);
-    $this->drupalLogin($this->site_admin);
+    $this->backdropLogin($this->site_admin);
     $product_node = $product_nodes[1];
-    $this->drupalGet("node/{$product_node->nid}");
+    $this->backdropGet("node/{$product_node->nid}");
     $this->assertText($product_node->title, t('Product !product_title node page exists', array('product_title' => $product_node->title)));
   }
 
@@ -897,8 +889,8 @@ class CommerceBaseTesterTestCase extends CommerceBaseTestCase {
    * Test the createDummyOrder function.
    */
   public function testTestCreateDummyOrder() {
-    $normal_user = $this->drupalCreateUser(array('access checkout'));
-    $this->drupalLogin($normal_user);
+    $normal_user = $this->backdropCreateUser(array('access checkout'));
+    $this->backdropLogin($normal_user);
 
     $sku = 'PROD-01';
     $product_name = 'Product One';
@@ -907,9 +899,9 @@ class CommerceBaseTesterTestCase extends CommerceBaseTestCase {
 
     // Check if the order is in cart status.
     $this->assertTrue(commerce_cart_order_is_cart($order), t('Order is in a shopping cart status'));
-    $this->drupalGet('checkout');
+    $this->backdropGet('checkout');
 
-    $this->assertTitle(t('Checkout'). ' | Drupal', t('Checkout accessible for the order'));
+    $this->assertTitle(t('Checkout'). ' | Backdrop', t('Checkout accessible for the order'));
     $this->assertText($product_name, t('Product is added to the order'));
   }
 
@@ -988,11 +980,11 @@ class CommerceBaseTesterTestCase extends CommerceBaseTestCase {
 
     // Create and login with a store admin user.
     $store_admin = $this->createStoreAdmin();
-    $this->drupalLogin($store_admin);
+    $this->backdropLogin($store_admin);
 
     // Access to the tax type listing page and assert that the dummy tax type
     // is present.
-    $this->drupalGet('admin/commerce/config/taxes/types');
+    $this->backdropGet('admin/commerce/config/taxes/types');
     $this->assertText($tax_type['display_title'], t('Dummy tax type found on admin page at admin/commerce/config/taxes/types'));
   }
 
@@ -1008,11 +1000,11 @@ class CommerceBaseTesterTestCase extends CommerceBaseTestCase {
 
     // Create and login with a store admin user.
     $store_admin = $this->createStoreAdmin();
-    $this->drupalLogin($store_admin);
+    $this->backdropLogin($store_admin);
 
     // Access to the tax type listing page and assert that the dummy tax type
     // is present.
-    $this->drupalGet('admin/commerce/config/taxes/rates');
+    $this->backdropGet('admin/commerce/config/taxes/rates');
     $this->assertText($tax_rate['display_title'], t('Dummy tax rate found on admin page at admin/commerce/config/taxes/rates'));
   }
 }

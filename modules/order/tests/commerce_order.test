@@ -13,7 +13,7 @@ class CommerceOrderCRUDTestCase extends CommerceBaseTestCase {
     return array(
       'name' => 'Order CRUD',
       'description' => 'Test the order CRUD functions.',
-      'group' => 'Drupal Commerce',
+      'group' => 'Backdrop Commerce',
     );
   }
 
@@ -100,7 +100,7 @@ class CommerceOrderCRUDTestCase extends CommerceBaseTestCase {
    * Test order Token replacement.
    */
   function testCommerceOrderTokens() {
-    $creator = $this->drupalCreateUser();
+    $creator = $this->backdropCreateUser();
     $order = commerce_order_new($creator->uid);
 
     $order->mail = $this->generateEmail();

@@ -13,7 +13,7 @@ class CommerceProductCRUDTestCase extends CommerceBaseTestCase {
     return array(
       'name' => 'Product CRUD',
       'description' => 'Test the product CRUD functions.',
-      'group' => 'Drupal Commerce',
+      'group' => 'Backdrop Commerce',
     );
   }
 
@@ -186,7 +186,7 @@ class CommerceProductCRUDTestCase extends CommerceBaseTestCase {
    */
   function testCommerceProductTokens() {
     $product = commerce_product_new('product');
-    $creator = $this->drupalCreateUser();
+    $creator = $this->backdropCreateUser();
 
     $product->sku = $this->randomName(10);
     $product->title = $this->randomName(10);
@@ -247,13 +247,13 @@ class CommerceProductCRUDTestCase extends CommerceBaseTestCase {
  * product loading / saving interplay. I don't even think the unchanged
  * condition will ever work as is in here.
  *
-class CommerceProductRulesTestCase extends DrupalWebTestCase {
+class CommerceProductRulesTestCase extends BackdropWebTestCase {
 
   public static function getInfo() {
     return array(
       'name' => 'Product rules integration',
       'description' => 'Tests the product rules integration.',
-      'group' => 'Drupal Commerce',
+      'group' => 'Backdrop Commerce',
     );
   }
 
@@ -267,7 +267,7 @@ class CommerceProductRulesTestCase extends DrupalWebTestCase {
   static function t($text, $strings) {
     $placeholders = array();
     foreach ($strings as $string) {
-      $placeholders['%' . $string] = drupal_placeholder($string);
+      $placeholders['%' . $string] = backdrop_placeholder($string);
     }
     return strtr($text, $placeholders);
   }
@@ -354,8 +354,8 @@ class CommerceProductRulesTestCase extends DrupalWebTestCase {
   protected function createValue($type, $info) {
     if (!isset($this->node)) {
       // Create some entities to use the first time this runs.
-      $this->node = $this->drupalCreateNode(array('type' => 'article'));
-      $this->user = $this->drupalCreateUser();
+      $this->node = $this->backdropCreateNode(array('type' => 'article'));
+      $this->user = $this->backdropCreateUser();
     }
 
     if (isset($info['options list'])) {
@@ -373,7 +373,7 @@ class CommerceProductRulesTestCase extends DrupalWebTestCase {
       case 'boolean':
         return TRUE;
       case 'text':
-        return drupal_strtolower($this->randomName(8));
+        return backdrop_strtolower($this->randomName(8));
       case 'text_formatted':
         return array('value' => $this->randomName(16));
 
