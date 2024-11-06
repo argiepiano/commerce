@@ -12,9 +12,6 @@
  * Implements hook_rules_event_info().
  */
 function commerce_payment_rules_event_info() {
-  // So that we can use the entity_rules_events_variables() helper function.
-  module_load_include('inc', 'entity', 'entity.rules');
-
   $events = array();
 
   $events['commerce_payment_methods'] = array(
