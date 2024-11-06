@@ -1267,7 +1267,7 @@ function _commerce_price_rules_data_ui_element_validate($element, &$form_state, 
 function commerce_price_autoload_info() {
   return [
     'commerce_price_handler_field_commerce_price' => 'includes/views/handlers/commerce_price_handler_field_commerce_price.inc',
-    'commerce_price_handler_filter_commerce_price_amount' => 'includes/views/handlers/views/handlers/commerce_price_handler_filter_commerce_price_amount.inc',
+    'commerce_price_handler_filter_commerce_price_amount' => 'includes/views/handlers/commerce_price_handler_filter_commerce_price_amount.inc',
     'commerce_price.views' => 'includes/views/commerce_price.views.inc',
   ];
 }
