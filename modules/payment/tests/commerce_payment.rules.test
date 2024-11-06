@@ -4,6 +4,7 @@
  * @file
  * Unit tests for payment rules.
  */
+require_once(__DIR__ . '/../../../tests/commerce_base.test');
 
 /**
  * Test payment user interface.

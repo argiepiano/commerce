@@ -4,6 +4,7 @@
  * @file
  * Tests for adding and displaying product reference fields.
  */
+require_once(__DIR__ . '/../../../tests/commerce_base.test');
 
 /**
  * Functional tests for the Product Reference module.

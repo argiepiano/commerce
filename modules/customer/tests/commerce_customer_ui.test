@@ -4,6 +4,7 @@
  * @file
  * Commerce customer profile tests.
  */
+require_once(__DIR__ . '/../../../tests/commerce_base.test');
 
 /**
  * Functional tests for the commerce customer UI module.

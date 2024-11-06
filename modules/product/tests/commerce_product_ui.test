@@ -4,6 +4,7 @@
  * @file
  * Functional tests for the commerce product ui module.
  */
+require_once(__DIR__ . '/../../../tests/commerce_base.test');
 
 /**
  * Test the product and product type CRUD.

@@ -323,7 +323,7 @@ class CommerceBaseTestCase extends BackdropWebTestCase {
       'locked' => 0,
     );
     $content_type = node_type_set_defaults($content_type);
-    node_type_save($content_type);
+    $result = node_type_save($content_type);
     node_add_body_field($content_type);
     $this->pass("Created content type: $type");
 
@@ -473,7 +473,7 @@ class CommerceBaseTestCase extends BackdropWebTestCase {
       if (empty($title)) {
         $title = $this->randomString(10);
       }
-      $node = (object) array('type' => $product_display_content_type);
+      $node = entity_create('node', array('type' => $product_display_content_type));
       node_object_prepare($node);
       $node->uid = 1;
       $node->title = $title;
